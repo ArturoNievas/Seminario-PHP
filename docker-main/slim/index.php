@@ -21,5 +21,42 @@ $app->add( function ($request, $handler) {
 });
 
 // ACÁ VAN LOS ENDPOINTS
+$app->post('/localidades',function(Request $request,Response $response,$args){
+    $connection->getConnection();
+    try {
+        //crear fila con $name
+        $name=$args['name'];
+        $query=$connection->$query('INSERT INTO `productos`(`nombre`) VALUES ('[$name]')');
+
+        //...
+    } catch (PDOException $e) {
+        //throw $e;
+    }
+});
+
+$app->egt('/localidades',function(Request $request,Response $response,$args){
+    $connection->getConnection();
+    try {
+        $query = $connection->query('SELECT * FROM localidades');
+        $tipos = $query->fetchAll(FDO::FETCH_ASSOC);
+
+        $playload = json_encode([
+            'status' => 'success',
+            'code' => 200,
+            'data' => $tipos
+        ]);
+
+        $response->getBody()->write($playload);
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (PDOException $e) {
+        $playload = json_encode([
+            'status' => 'success',
+            'code' => 400
+        ]);
+
+        $response->getBody()->write($playload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+});
 
 $app->run();
