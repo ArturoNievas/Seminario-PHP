@@ -20,25 +20,48 @@ $app->add( function ($request, $handler) {
     ;
 });
 
-// ACÁ VAN LOS ENDPOINTS
-$app->post('/localidades',function(Request $request,Response $response,$args){
-    $connection->getConnection();
-    try {
-        //crear fila con $name
-        $name=$args['name'];
-        $query=$connection->$query('INSERT INTO `productos`(`nombre`) VALUES ('[$name]')');
+function getConnection(){
+    $dbhost="db";
+    $dbname="seminariophp";
+    $dbuser="seminariophp";
+    $dbpass="seminariophp";
 
-        //...
-    } catch (PDOException $e) {
-        //throw $e;
-    }
+    $connection = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
+    $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    return $connection;
+}
+
+// ACÁ VAN LOS ENDPOINTS
+$app->get('/',function(Request $request,Response $response,$args){
+    $response->getBody()->write('Hola mundo!!');
+    return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->egt('/localidades',function(Request $request,Response $response,$args){
+/*
+falta checkear
+$app->post('/localidades',function(Request $request,Response $response,$args){
+    $data = $request->getParsedBody();
+    $name = $data['name'];
+
     $connection->getConnection();
     try {
+        $query = $connection->query("INSERT INTO `productos`(`nombre`) VALUES ('$name')");
+        
+        $response->getBody()->write(json_encode(['status' => 'success', 'message' => 'Producto agregado correctamente']));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    } catch (PDOException $e) {
+        $response->getBody()->write(json_encode(['status' => 'error', 'message' => 'Error al agregar producto: ' . $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+    }
+});
+*/
+
+$app->get('/localidades',function(Request $request,Response $response,$args){
+    $connection = getConnection();
+    try {
         $query = $connection->query('SELECT * FROM localidades');
-        $tipos = $query->fetchAll(FDO::FETCH_ASSOC);
+        $tipos = $query->fetchAll(PDO::FETCH_ASSOC);
 
         $playload = json_encode([
             'status' => 'success',
