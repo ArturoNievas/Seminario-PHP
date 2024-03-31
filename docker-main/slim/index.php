@@ -57,28 +57,109 @@ $app->post('/localidades',function(Request $request,Response $response,$args){
 });
 */
 
-$app->get('/localidades',function(Request $request,Response $response,$args){
-    $connection = getConnection();
+$app->get("/localidades",function(Request $request,Response $response,$args){
+    $conn = getConnection();
     try {
-        $query = $connection->query('SELECT * FROM localidades');
-        $tipos = $query->fetchAll(PDO::FETCH_ASSOC);
+        //code...
+        $query = $conn->query('SELECT * FROM localidades');
+        $data = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        $playload = json_encode([
+        $payload= [
             'status' => 'success',
             'code' => 200,
-            'data' => $tipos
-        ]);
+            'data' => $data
+        ];
 
-        $response->getBody()->write($playload);
-        return $response->withHeader('Content-Type', 'application/json');
-    } catch (PDOException $e) {
-        $playload = json_encode([
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (\Throwable $th) {
+        $payload = [
             'status' => 'success',
-            'code' => 400
-        ]);
+            'code' => 400,
+            'data' => $th
+        ];
 
-        $response->getBody()->write($playload);
-        return $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    }
+});
+
+$app->get("/tipos_propiedad",function(Request $request,Response $response, $args){
+    $conn = getConnection();
+    try {
+        $query = $conn->query("SELECT * FROM tipo_propiedades");
+        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $data
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response -> withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 400,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    }
+});
+
+$app->get("/inquilinos",function(Request $request,Response $response,$args){
+    $conn = getConnection();
+    try {
+        $query = $conn->query("SELECT * FROM inquilinos");
+        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $data
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 400,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    }
+});
+
+$app->get("/inquilinos/{id}",function(Request $request,Response $response,$args){
+    $id=$args["id"];
+    $conn=getConnection();
+    try {
+        $query = $conn->query("SELECT * FROM inquilinos WHERE id = $id");
+        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $data
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 400,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
     }
 });
 
