@@ -172,11 +172,11 @@ $app->get("/localidades",function(Request $request,Response $response,$args){
 
         $response->getBody()->write(json_encode($payload));
         return $response->withHeader('Content-Type','application/json');
-    } catch (\Throwable $th) {
+    } catch (PDOException $e) {
         $payload = [
-            'status' => 'success',
+            'status' => 'error',
             'code' => 400,
-            'data' => $th
+            'data' => $e.getMessage()
         ];
 
         $response->getBody()->write(json_encode($payload));
@@ -436,8 +436,61 @@ $app->get("/inquilinos",function(Request $request,Response $response,$args){
         return $response->withHeader('Content-Type','application/json');
     }
 });
-
 //VER_INQUILINO
+$app->post("/inquilinos",function(Request $request,Response $response, $args){
+    $conn = getConnection();
+    $data = $request->getParsedBody();
+    try {
+        $apellido = $data["apellido"];
+        $nombre = $data["nombre"];
+        $documento = $data["documento"];
+        $email = $data["email"];
+        $activo = $data["activo"];
+        $query = $conn->query("INSERT INTO `inquilinos`(`apellido`, `nombre`, `documento`, `email`, `activo`) VALUES ('$apellido','$nombre','$documento','$email','$activo')");
+
+        $response->getBody()->write(["message" => "ejecutado"]);
+        return $response->withHeader("Content-Type","application/json");
+    } catch (PDOException $e) {
+        $response->getBody()->write(["message" => e.getMessage()]);
+        return $response->withHeader("Content-Type","application/json");
+    }
+});
+
+$app->delete("/inquilinos/{id}", function(Request $request, Response $response, $args) {
+    $id = $args["id"];
+    $conn = getConnection();
+    try {
+        $query = $conn->prepare("DELETE FROM inquilinos WHERE id = :id");
+        $query->execute([':id' => $id]);
+
+        if ($query->rowCount() > 0) {
+            $payload = [
+                "status" => "success",
+                "code" => 200,
+                "message" => "Registro eliminado correctamente"
+            ];
+        } else {
+            $payload = [
+                "status" => "error",
+                "code" => 404,
+                "message" => "No se encontró el registro con el ID proporcionado"
+            ];
+        }
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 500,
+            "message" => "Error al eliminar el registro: " . $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    }
+});
+
 $app->get("/inquilinos/{id}",function(Request $request,Response $response,$args){
     $id=$args["id"];
     $conn=getConnection();
