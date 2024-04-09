@@ -38,25 +38,6 @@ $app->get('/',function(Request $request,Response $response,$args){
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-/*
-falta checkear
-$app->post('/localidades',function(Request $request,Response $response,$args){
-    $data = $request->getParsedBody();
-    $name = $data['name'];
-
-    $connection->getConnection();
-    try {
-        $query = $connection->query("INSERT INTO `productos`(`nombre`) VALUES ('$name')");
-        
-        $response->getBody()->write(json_encode(['status' => 'success', 'message' => 'Producto agregado correctamente']));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-    } catch (PDOException $e) {
-        $response->getBody()->write(json_encode(['status' => 'error', 'message' => 'Error al agregar producto: ' . $e->getMessage()]));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-    }
-});
-*/
-
 
 //-----------------------------------------------------------//
 //------------------------LOCALIDADES------------------------//
@@ -70,22 +51,35 @@ $app->post('/localidades', function (Request $request, Response $response) {
 
     // Validar los datos recibidos
     if (!isset($data['nombre']) || empty($data['nombre']) || strlen($data['nombre']) <= 50) {
-        return $response->withJson(['error' => 'El nombre de la localidad es requerido'], 400);
-    }
+        $response->getBody()->write(json_encode(['error' => 'El nombre de la localidad es requerido']));
+        return $response->withStatus(400);
+    } else {
+        // Insertar la nueva localidad en la base de datos
+        try {
+            $connection = getConnection();
 
-    // Insertar la nueva localidad en la base de datos
-    try {
-        $connection = getConnection();
-        $stmt = $connection->prepare("INSERT INTO localidades (nombre) VALUES (:nombre)");
-        $stmt->bindParam(':nombre', $data['nombre']);
-        $stmt->execute();
-        $connection = null; // Cerrar la conexión
+            $nombre = $data['nombre'];
+            $sql = "SELECT * FROM localidades WHERE nombre = $nombre";
+            $localidades_repetidas = $connection->query($sql);
+            if ($localidades_repetidas->rowCount()>0){
+                $response->getBody()->write(json_encode(['error' => 'El nombre de la localidad esta repetido']));
+                return $response->withStatus(400);
+            } else {
+                $stmt = $connection->prepare("INSERT INTO localidades (nombre) VALUES (:nombre)");
+                $stmt->bindParam(':nombre', $data['nombre']);
+                $stmt->execute();
+                $connection = null; // Cerrar la conexión
 
-        return $response->withJson(['message' => 'Localidad insertada correctamente'], 201);
-    } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al insertar la localidad'], 500);
+                $response->getBody()->write(json_encode(['success' => 'La localidad fue agregada correctamente']));
+                return $response->withStatus(201);
+            }
+        } catch (PDOException $e) {
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withStatus(500);
+        }
     }
 });
+/*
 
 //ELIMINAR
 $app->delete('/localidades/{id}', function (Request $request, Response $response, $args) {
@@ -689,13 +683,55 @@ $app->get('/propiedades/{id}', function (Request $request, Response $response, $
     }
 });
 
-
+*/
 
 //--------------------------------------------------------//
 //------------------------RESERVAS------------------------//
 //--------------------------------------------------------//
 
+//CREAR
+$app->post('/reservas', function (Request $request, Response $response) {
+    // Obtener los datos de la solicitud
+    $data = $request->getParsedBody();
 
+    // Validar los datos recibidos
+
+    // Verificar que todos los campos requeridos estén presentes
+    $requiredFields = ['propiedad_id', 'inquilino_id', 'fecha_desde', 'cantidad_noches'];
+    foreach ($requiredFields as $field) {
+        if (!isset($data[$field]) || empty($data['nombre'])) {
+            $response->getBody()->write(json_encode(['error' => 'El campo' . $field . ' de la reserva es requerido']));
+            return $response->withStatus(400);        }
+    }
+
+    // Insertar la nueva reserva en la base de datos
+    try {
+        $connection = getConnection();
+
+        $inquilino = $connection->query('SELECT activo FROM inquilinos WHERE id = ' . $data['inquilino_id']);
+        $propiedad = $connection->query('SELECT disponible, valor_noche FROM propiedades WHERE id = ' . $data['propiedad_id']);
+        
+        if (!$inquilino){
+            $response->getBody()->write(json_encode(['error' => 'El inquilino no está activo']));
+            return $response->withStatus(400);
+        } elseif (!$propiedad['disponible']){
+            $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible']));
+            return $response->withStatus(400);
+        } else {
+            $stmt = $connection->prepare("INSERT INTO reservas (propiedad_id, inquilino_id, fechas_desde, cantidad_noches, valor_total) VALUES (:propiedad_id, :inquilino_id, :fechas_desde, :cantidad_noches, :valor_total)");
+            $stmt->bindParam(':valor_total',$propiedad['valor_noche'] * $data['cantidad_noches']);
+            
+            $stmt->execute();
+            $connection = null; // Cerrar la conexión
+
+            $response->getBody()->write(json_encode(['success' => 'La localidad fue agregada correctamente']));
+            return $response->withStatus(201);
+        }
+    } catch (PDOException $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
+    }
+});
 
 
 $app->run();
