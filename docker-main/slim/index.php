@@ -32,13 +32,6 @@ function getConnection(){
     return $connection;
 }
 
-// ACÁ VAN LOS ENDPOINTS
-$app->get('/',function(Request $request,Response $response,$args){
-    $response->getBody()->write('Hola mundo!!');
-    return $response->withHeader('Content-Type', 'application/json');
-});
-
-
 //-----------------------------------------------------------//
 //------------------------LOCALIDADES------------------------//
 //-----------------------------------------------------------//
@@ -431,7 +424,6 @@ $app->delete('/inquilinos/{id}', function (Request $request, Response $response,
     }
 });
 
-
 //EDITAR
 $app->put('/inquilinos/{id}', function (Request $request, Response $response, $args) {
     $id = $args['id'];
@@ -585,21 +577,31 @@ $app->post('/propiedades', function (Request $request, Response $response) {
 
     // Verificar que todos los campos requeridos estén presentes
     $requiredFields = ['domicilio', 'localidad_id', 'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'tipo_propiedad_id', 'imagen', 'tipo_imagen'];
+    $error = false;
+    $campos_faltantes = "";
     foreach ($requiredFields as $field) {
         if (!isset($data[$field])) {
-            return $response->withJson(['error' => "El campo $field es requerido"], 400);
+            $campos_faltantes = $campos_faltantes . $field ." ";
+            $error = true;
         }
+    }
+    if ($error){
+        $response->getBody()->write(json_encode(['error' => "Los campos $campos_faltantes son requeridos"]));
+        return $response->withStatus(400);
     }
 
     try {
         $connection = getConnection();
         $stmt = $connection->prepare("INSERT INTO propiedades (domicilio, localidad_id, cantidad_habitaciones, cantidad_banios, cochera, cantidad_huespedes, fecha_inicio_disponibilidad, cantidad_dias, disponible, valor_noche, tipo_propiedad_id, imagen, tipo_imagen) VALUES (:domicilio, :localidad_id, :cantidad_habitaciones, :cantidad_banios, :cochera, :cantidad_huespedes, :fecha_inicio_disponibilidad, :cantidad_dias, :disponible, :valor_noche, :tipo_propiedad_id, :imagen, :tipo_imagen)");
         $stmt->execute($data);
+
         $connection = null;
 
-        return $response->withJson(['message' => 'Propiedad creada correctamente'], 201);
+        $response->getBody()->write(json_encode(['message' => 'Propiedad creada correctamente']));
+        return $response->withStatus(400);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al crear la propiedad'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
@@ -608,7 +610,8 @@ $app->delete('/propiedades/{id}', function (Request $request, Response $response
     $id = $args['id'];
 
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de propiedad no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de propiedad no válido']));
+        return $response->withStatus(400);
     }
 
     try {
@@ -618,14 +621,17 @@ $app->delete('/propiedades/{id}', function (Request $request, Response $response
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'La propiedad con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null;
 
-        return $response->withJson(['message' => 'Propiedad eliminada correctamente']);
+        $response->getBody()->write(json_encode(['message' => 'Propiedad eliminada correctamente']));
+        return $response->withStatus(204);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al eliminar la propiedad'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
@@ -635,15 +641,23 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
     $data = $request->getParsedBody();
 
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de propiedad no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de propiedad no válido']));
+        return $response->withStatus(400);
     }
 
     // Verificar que todos los campos requeridos estén presentes
-    $requiredFields = ['domicilio', 'localidad_id', 'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'tipo_propiedad_id'];
+    $requiredFields = ['domicilio', 'localidad_id', 'cantidad_huespedes', 'fecha_inicio_disponibilidad', 'cantidad_dias', 'disponible', 'valor_noche', 'tipo_propiedad_id', 'imagen', 'tipo_imagen'];
+    $error = false;
+    $campos_faltantes = "";
     foreach ($requiredFields as $field) {
         if (!isset($data[$field])) {
-            return $response->withJson(['error' => "El campo $field es requerido"], 400);
+            $campos_faltantes = $campos_faltantes . $field ." ";
+            $error = true;
         }
+    }
+    if ($error){
+        $response->getBody()->write(json_encode(['error' => "Los campos $campos_faltantes son requeridos"]));
+        return $response->withStatus(400);
     }
 
     try {
@@ -652,28 +666,48 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
         $stmt->execute($data);
 
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'La propiedad con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null;
 
-        return $response->withJson(['message' => 'Propiedad actualizada correctamente']);
+        $response->getBody()->write(json_encode(['message' => 'Propiedad actualizada correctamente']));
+        return $response->withStatus(200);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al actualizar la propiedad'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
 //LISTAR
 $app->get("/propiedades",function(Request $request,Response $response,$args){
-    $conn = getConnection();
+    $data = $request->getParsedBody();
+
     try {
-        $query = $conn->query("SELECT * FROM propiedades");
-        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+        $conn = getConnection();
+
+        //Armamos la consulta SQL
+        $sql = "SELECT * FROM propiedades";
+        $campos = ['disponible','localidad_id','fecha_inicio_disponibilidad','cantidad_huespedes'];
+        $condiciones = ""
+        foreach ($campos as $key) {
+            if (isset($data['$key']) && !empty($data['$key'])){
+                $condiciones = $condiciones . " $key = $data['$key'] AND";
+            }
+        }
+        $condiciones = substr($condiciones, 0, -4);
+        if ($condiciones!=""){
+            $sql = $sql . " WHERE" . $condiciones;
+        }
+        
+        $query = $conn->query($sql);
+        $propiedades = $query->fetchAll(PDO::FETCH_ASSOC);
 
         $payload = [
             "status" => "success",
             "code" => 200,
-            "data" => $data
+            "data" => $propiedades
         ];
 
         $response->getBody()->write(json_encode($payload));
@@ -695,7 +729,8 @@ $app->get('/propiedades/{id}', function (Request $request, Response $response, $
     $id = $args['id'];
 
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de propiedad no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de propiedad no válido']));
+        return $response->withStatus(400);
     }
 
     try {
@@ -706,14 +741,30 @@ $app->get('/propiedades/{id}', function (Request $request, Response $response, $
         $propiedad = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$propiedad) {
-            return $response->withJson(['error' => 'La propiedad con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null;
 
-        return $response->withJson($propiedad);
+        
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $propiedad
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al obtener la propiedad'], 500);
+        $payload = [
+            "status" => "error",
+            "code" => 500,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');;
     }
 });
 
