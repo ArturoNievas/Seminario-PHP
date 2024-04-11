@@ -121,7 +121,8 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
 
     // Verificar que el ID sea un número entero positivo
     if (!ctype_digit($id) || $id <= 0 ) {
-        return $response->withJson(['error' => 'ID de localidad no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de localidad no válido']));
+        return $response->withStatus(400);
     }
 
     // Obtener los datos enviados en el cuerpo de la solicitud
@@ -129,12 +130,21 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
 
     // Validar los datos recibidos
     if (!isset($data['nombre']) || empty($data['nombre']) || strlen($data['nombre']) <= 50) {
-        return $response->withJson(['error' => 'El nombre de la localidad es requerido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'El nombre de la localidad es requerido']));
+        return $response->withStatus(400);
     }
 
     // Actualizar la localidad en la base de datos
     try {
         $connection = getConnection();
+
+        // Verificar si el nuevo nombre está repetido
+        $repetidos = $connection->query("SELECT * FROM localidades WHERE nombre =". $data['nombre']);
+        if ($repetidos->rowCount() != 0) {
+            $response->getBody()->write(json_encode(['error' => 'Ya existe una localidad con el nombre'. $data['nombre']]));
+            return $response->withStatus(400);
+        }
+
         $stmt = $connection->prepare("UPDATE localidades SET nombre = :nombre WHERE id = :id");
         $stmt->bindParam(':nombre', $data['nombre']);
         $stmt->bindParam(':id', $id);
@@ -142,14 +152,17 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
 
         // Verificar si se actualizó alguna fila
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'La localidad con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'La localidad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null; // Cerrar la conexión
 
-        return $response->withJson(['message' => 'Localidad actualizada correctamente']);
+        $response->getBody()->write(json_encode(['success' => 'Localidad actualizada correctamente']));
+        return $response->withStatus(201);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al actualizar la localidad'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
@@ -157,7 +170,6 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
 $app->get("/localidades",function(Request $request,Response $response,$args){
     $conn = getConnection();
     try {
-        //code...
         $query = $conn->query('SELECT * FROM localidades');
         $data = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -193,21 +205,37 @@ $app->post('/tipos_propiedad', function (Request $request, Response $response) {
     $data = $request->getParsedBody();
 
     // Validar los datos recibidos
-    if (!isset($data['nombre']) || empty($data['nombre']) || strlen($data['nombre']) <= 50) {
-        return $response->withJson(['error' => 'El nombre del tipo de propiedad es requerido'], 400);
+    if (!isset($data['nombre']) || empty($data['nombre'])) {
+        $response->getBody()->write(json_encode(['error' => 'El nombre del tipo de propiedad es requerido']));
+        return $response->withStatus(400);
+    }
+
+    if (strlen($data['nombre']) <= 50){
+        $response->getBody()->write(json_encode(['error' => 'El nombre del tipo de propiedad debe tener a lo sumo 50 caracteres']));
+        return $response->withStatus(400);
     }
 
     // Insertar el nuevo tipo de propiedad en la base de datos
     try {
         $connection = getConnection();
+
+        // Verificar que el nombre no esté repetido
+        $repetidos = $connection->query("SELECT * FROM tipos_propiedad WHERE nombre =" . $data['nombre']);
+        if ($repetidos->rowCount() != 0){
+            $response->getBody()->write(json_encode(['error' => 'Ya existe un tipo de propiedad con el nombre' . $data['nombre']]));
+            return $response->withStatus(400);
+        }
+
         $stmt = $connection->prepare("INSERT INTO tipos_propiedad (nombre) VALUES (:nombre)");
         $stmt->bindParam(':nombre', $data['nombre']);
         $stmt->execute();
         $connection = null; // Cerrar la conexión
 
-        return $response->withJson(['message' => 'Tipo de propiedad insertado correctamente'], 201);
+        $response->getBody()->write(json_encode(['success' => 'Tipo de propiedad insertado correctamente']));
+        return $response->withStatus(200);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al insertar el tipo de propiedad'], 500);
+        $response->getBody()->write(json_encode(['error' => 'Error al insertar el tipo de propiedad']));
+        return $response->withStatus(500);
     }
 });
 
@@ -218,7 +246,8 @@ $app->delete('/tipos_propiedad/{id}', function (Request $request, Response $resp
 
     // Verificar que el ID sea un número entero positivo
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de tipo de propiedad no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de tipo de propiedad no válido']));
+        return $response->withStatus(400);
     }
 
     // Eliminar el tipo de propiedad de la base de datos
@@ -230,14 +259,17 @@ $app->delete('/tipos_propiedad/{id}', function (Request $request, Response $resp
 
         // Verificar si se eliminó alguna fila
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'El tipo de propiedad con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'El tipo de propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null; // Cerrar la conexión
 
-        return $response->withJson(['message' => 'Tipo de propiedad eliminado correctamente']);
+        $response->getBody()->write(json_encode(['message' => 'Tipo de propiedad eliminado correctamente']));
+        return $response->withStatus(204);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al eliminar el tipo de propiedad'], 500);
+        $response->getBody()->write(json_encode(['error' => 'Error al eliminar el tipo de propiedad']));
+        return $response->withStatus(500);
     }
 });
 
@@ -248,20 +280,35 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
 
     // Verificar que el ID sea un número entero positivo
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de tipo de propiedad no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de tipo de propiedad no válido']));
+        return $response->withStatus(400);
     }
 
     // Obtener los datos enviados en el cuerpo de la solicitud
     $data = $request->getParsedBody();
 
     // Validar los datos recibidos
-    if (!isset($data['nombre']) || empty($data['nombre']) || strlen($data['nombre']) <= 50) {
-        return $response->withJson(['error' => 'El nombre del tipo de propiedad es requerido'], 400);
+    if (!isset($data['nombre']) || empty($data['nombre'])) {
+        $response->getBody()->write(json_encode(['error' => 'El nombre del tipo de propiedad es requerido']));
+        return $response->withStatus(400);
+    }
+
+    if (strlen($data['nombre']) <= 50){
+        $response->getBody()->write(json_encode(['error' => 'El nombre del tipo de propiedad debe tener a lo sumo 50 caracteres']));
+        return $response->withStatus(400);
     }
 
     // Actualizar la localidad en la base de datos
     try {
         $connection = getConnection();
+
+        // Verificar que el nombre no esté repetido
+        $repetidos = $connection->query("SELECT * FROM tipos_propiedad WHERE nombre =" . $data['nombre']);
+        if ($repetidos->rowCount() != 0){
+            $response->getBody()->write(json_encode(['error' => 'Ya existe un tipo de propiedad con el nombre' . $data['nombre']]));
+            return $response->withStatus(400);
+        }
+
         $stmt = $connection->prepare("UPDATE tipos_propiedad SET nombre = :nombre WHERE id = :id");
         $stmt->bindParam(':nombre', $data['nombre']);
         $stmt->bindParam(':id', $id);
@@ -269,14 +316,17 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
 
         // Verificar si se actualizó alguna fila
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'El tipo de propiedad con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'El tipo de propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null; // Cerrar la conexión
 
-        return $response->withJson(['message' => 'Tipo de propiedad actualizada correctamente']);
+        $response->getBody()->write(json_encode(['message' => 'Tipo de propiedad actualizada correctamente']));
+        return $response->withStatus(200);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al actualizar el tipo de propiedad'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
@@ -284,7 +334,7 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
 $app->get("/tipos_propiedad",function(Request $request,Response $response, $args){
     $conn = getConnection();
     try {
-        $query = $conn->query("INSERT INTO nombre_tabla VALUES (val1, val2, ...)");
+        $query = $conn->query("SELECT * FROM tipos_propiedad");
         $data = $query->fetchAll(PDO::FETCH_ASSOC);
 
         $payload = [
@@ -320,11 +370,20 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
     // Validar los datos recibidos
     $restricciones = strlen($data['apellido'])<=15 && strlen($data['nombre'])<=25 && strlen($data['email'])<=20 && is_int($data['documento']) && is_bool($data['activo']);
     if (!isset($data['apellido']) || !isset($data['nombre']) || !isset($data['documento']) || !isset($data['email']) || !isset($data['activo']) || !$restricciones) {
-        return $response->withJson(['error' => 'Todos los campos son requeridos'], 400);
+        $response->getBody()->write(json_encode(['error' => 'Todos los campos son requeridos']));
+        return $response->withStatus(400);
     }
 
     try {
         $connection = getConnection();
+
+        //Verificar que el dni sea único
+        $repetidos = $connection->query("SELECT * FROM inquilinos WHERE documento=" . $data['documento']);
+        if ($repetidos->rowCount() != 0){
+            $response->getBody()->write(json_encode(['error' => 'Ya existe un inquilino con el documento' . $data['documento']]));
+            return $response->withStatus(400);
+        }
+
         $stmt = $connection->prepare("INSERT INTO inquilinos (apellido, nombre, documento, email, activo) VALUES (:apellido, :nombre, :documento, :email, :activo)");
         $stmt->bindParam(':apellido', $data['apellido']);
         $stmt->bindParam(':nombre', $data['nombre']);
@@ -334,9 +393,11 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
         $stmt->execute();
         $connection = null;
 
-        return $response->withJson(['message' => 'Inquilino creado correctamente'], 201);
+        $response->getBody()->write(json_encode(['success' => 'Inquilino insertado correctamente']));
+        return $response->withStatus(201);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al crear el inquilino'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
@@ -345,7 +406,8 @@ $app->delete('/inquilinos/{id}', function (Request $request, Response $response,
     $id = $args['id'];
 
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de inquilino no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        return $response->withStatus(400);
     }
 
     try {
@@ -355,14 +417,17 @@ $app->delete('/inquilinos/{id}', function (Request $request, Response $response,
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'El inquilino con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['error' => 'El inquilino con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null;
 
-        return $response->withJson(['message' => 'Inquilino eliminado correctamente']);
+        $response->getBody()->write(json_encode(['message' => 'Inquilino eliminado correctamente']));
+        return $response->withStatus(204);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al eliminar el inquilino'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
 
@@ -372,7 +437,8 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
     $id = $args['id'];
 
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de inquilino no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        return $response->withStatus(400);
     }
 
     $data = $request->getParsedBody();
@@ -380,7 +446,8 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
     // Validar los datos recibidos
     $restricciones = strlen($data['apellido'])<=15 && strlen($data['nombre'])<=25 && strlen($data['email'])<=20 && is_int($data['documento']) && is_bool($data['activo']);
     if (!isset($data['apellido']) || !isset($data['nombre']) || !isset($data['documento']) || !isset($data['email']) || !isset($data['activo']) || !$restricciones) {
-        return $response->withJson(['error' => 'Todos los campos son requeridos'], 400);
+        $response->getBody()->write(json_encode(['message' => 'Todos los campos son requeridos']));
+        return $response->withStatus(400);
     }
 
     try {
@@ -395,17 +462,19 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            return $response->withJson(['error' => 'El inquilino con el ID especificado no existe'], 404);
+            $response->getBody()->write(json_encode(['message' => 'El inquilino con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         $connection = null;
 
-        return $response->withJson(['message' => 'Inquilino actualizado correctamente']);
+        $response->getBody()->write(json_encode(['message' => 'Inquilino actualizado correctamente']));
+        return $response->withStatus(200);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al actualizar el inquilino'], 500);
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
     }
 });
-
 
 //LISTAR
 $app->get("/inquilinos",function(Request $request,Response $response,$args){
@@ -425,7 +494,7 @@ $app->get("/inquilinos",function(Request $request,Response $response,$args){
     } catch (PDOException $e) {
         $payload = [
             "status" => "error",
-            "code" => 400,
+            "code" => 500,
             "data" => $e->getMessage()
         ];
 
@@ -433,67 +502,19 @@ $app->get("/inquilinos",function(Request $request,Response $response,$args){
         return $response->withHeader('Content-Type','application/json');
     }
 });
+
 //VER_INQUILINO
-$app->post("/inquilinos",function(Request $request,Response $response, $args){
-    $conn = getConnection();
-    $data = $request->getParsedBody();
-    try {
-        $apellido = $data["apellido"];
-        $nombre = $data["nombre"];
-        $documento = $data["documento"];
-        $email = $data["email"];
-        $activo = $data["activo"];
-        $query = $conn->query("INSERT INTO `inquilinos`(`apellido`, `nombre`, `documento`, `email`, `activo`) VALUES ('$apellido','$nombre','$documento','$email','$activo')");
+$app->get("/inquilinos/{id}",function(Request $request,Response $response, $args){
+    $id = $args['id'];
 
-        $response->getBody()->write(["message" => "ejecutado"]);
-        return $response->withHeader("Content-Type","application/json");
-    } catch (PDOException $e) {
-        $response->getBody()->write(["message" => e.getMessage()]);
-        return $response->withHeader("Content-Type","application/json");
+    if (!ctype_digit($id) || $id <= 0) {
+        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        return $response->withStatus(400);
     }
-});
 
-$app->delete("/inquilinos/{id}", function(Request $request, Response $response, $args) {
-    $id = $args["id"];
-    $conn = getConnection();
     try {
-        $query = $conn->prepare("DELETE FROM inquilinos WHERE id = :id");
-        $query->execute([':id' => $id]);
-
-        if ($query->rowCount() > 0) {
-            $payload = [
-                "status" => "success",
-                "code" => 200,
-                "message" => "Registro eliminado correctamente"
-            ];
-        } else {
-            $payload = [
-                "status" => "error",
-                "code" => 404,
-                "message" => "No se encontró el registro con el ID proporcionado"
-            ];
-        }
-
-        $response->getBody()->write(json_encode($payload));
-        return $response->withHeader('Content-Type','application/json');
-    } catch (PDOException $e) {
-        $payload = [
-            "status" => "error",
-            "code" => 500,
-            "message" => "Error al eliminar el registro: " . $e->getMessage()
-        ];
-
-        $response->getBody()->write(json_encode($payload));
-        return $response->withHeader('Content-Type','application/json');
-    }
-});
-
-$app->get("/inquilinos/{id}",function(Request $request,Response $response,$args){
-    $id=$args["id"];
-    $conn=getConnection();
-    try {
-        $query = $conn->query("SELECT * FROM inquilinos WHERE id = $id");
-        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+        $query = $conn->query("SELECT * FROM inquilinos WHERE id=" . $id);
+        $data = $query->fetch(PDO::FETCH_ASSOC);
 
         $payload = [
             "status" => "success",
@@ -506,7 +527,7 @@ $app->get("/inquilinos/{id}",function(Request $request,Response $response,$args)
     } catch (PDOException $e) {
         $payload = [
             "status" => "error",
-            "code" => 400,
+            "code" => 500,
             "data" => $e->getMessage()
         ];
 
@@ -520,7 +541,8 @@ $app->get('/inquilinos/{idInquilino}/reservas', function (Request $request, Resp
     $id = $args['idInquilino'];
 
     if (!ctype_digit($id) || $id <= 0) {
-        return $response->withJson(['error' => 'ID de inquilino no válido'], 400);
+        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        return $response->withStatus(400);
     }
 
     try {
@@ -531,14 +553,23 @@ $app->get('/inquilinos/{idInquilino}/reservas', function (Request $request, Resp
         $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($reservas)) {
-            return $response->withJson(['message' => 'El inquilino no tiene reservas']);
+            $response->getBody()->write(json_encode(['message' => 'El inquilino no tiene reservas']));
+            return $response->withStatus(200);
         }
 
         $connection = null;
 
-        return $response->withJson($reservas);
+        $response->getBody()->write(json_encode($reservas));
+        return $response->withStatus(200);
     } catch (PDOException $e) {
-        return $response->withJson(['error' => 'Error al obtener el historial de reservas del inquilino'], 500);
+        $payload = [
+            "status" => "error",
+            "code" => 500,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
     }
 });
 
