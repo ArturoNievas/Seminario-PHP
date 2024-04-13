@@ -87,15 +87,24 @@ $app->delete('/localidades/{id}', function (Request $request, Response $response
     // Eliminar la localidad de la base de datos
     try {
         $connection = getConnection();
-        $stmt = $connection->prepare("DELETE FROM localidades WHERE id = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
 
-        // Verificar si se eliminó alguna fila
-        if ($stmt->rowCount() == 0) {
+        // Verificar si existe la localidad a eliminar
+        $localidad = $connection->query("SELECT * FROM localidades WHERE id = " . $id);
+        if ($localidad->rowCount() == 0){
             $response->getBody()->write(json_encode(['error' => 'La localidad con el ID especificado no existe']));
             return $response->withStatus(404);
         }
+
+        //Verificar que no haya propiedades en la localidad a eliminar
+        $ocurrencias = $connection->query("SELECT * FROM propiedades WHERE localidad_id = " . $id);
+        if ($ocurrencias->rowCount() != 0){
+            $response->getBody()->write(json_encode(['error' => 'La localidad con el ID especificado no se puede eliminar, debido a que existen propiedades registradas en la misma']));
+            return $response->withStatus(400);
+        }
+
+        $stmt = $connection->prepare("DELETE FROM localidades WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
 
         $connection = null; // Cerrar la conexión
 
@@ -246,15 +255,24 @@ $app->delete('/tipos_propiedad/{id}', function (Request $request, Response $resp
     // Eliminar el tipo de propiedad de la base de datos
     try {
         $connection = getConnection();
-        $stmt = $connection->prepare("DELETE FROM tipos_propiedad WHERE id = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
 
-        // Verificar si se eliminó alguna fila
-        if ($stmt->rowCount() == 0) {
+        // Verificar si existe el tipo de propiedad a eliminar
+        $tipo_propiedad = $connection->query("SELECT * FROM tipos_propiedad WHERE id = " . $id);
+        if ($tipo_propiedad->rowCount() == 0){
             $response->getBody()->write(json_encode(['error' => 'El tipo de propiedad con el ID especificado no existe']));
             return $response->withStatus(404);
         }
+
+        //Verificar que no haya propiedades de ese tipo
+        $ocurrencias = $connection->query("SELECT * FROM propiedades WHERE tipo_propiedad_id = " . $id);
+        if ($ocurrencias->rowCount() != 0){
+            $response->getBody()->write(json_encode(['error' => 'El tipo de propiedad con el ID especificado no se puede eliminar, debido a que existen propiedades registradas de ese tipo']));
+            return $response->withStatus(400);
+        }
+
+        $stmt = $connection->prepare("DELETE FROM tipos_propiedad WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
 
         $connection = null; // Cerrar la conexión
 
@@ -394,6 +412,8 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
     }
 });
 
+// ¿Acá habría que preguntar por reservas futuras y en curso o por todas?
+// Si es por las futuras y en curso nada más y solo tiene reservas pasadas ¿Hay que eliminar los registros de las mismas?
 //ELIMINAR
 $app->delete('/inquilinos/{id}', function (Request $request, Response $response, $args) {
     $id = $args['id'];
@@ -605,6 +625,8 @@ $app->post('/propiedades', function (Request $request, Response $response) {
     }
 });
 
+// ¿Acá habría que preguntar por reservas futuras y en curso o por todas?
+// Si es por las futuras y en curso nada más y solo tiene reservas pasadas ¿Hay que eliminar los registros de las mismas?
 //ELIMINAR
 $app->delete('/propiedades/{id}', function (Request $request, Response $response, $args) {
     $id = $args['id'];
@@ -616,14 +638,24 @@ $app->delete('/propiedades/{id}', function (Request $request, Response $response
 
     try {
         $connection = getConnection();
-        $stmt = $connection->prepare("DELETE FROM propiedades WHERE id = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
 
-        if ($stmt->rowCount() == 0) {
+        // Verificar si existe la propiedad a eliminar
+        $propiedad = $connection->query("SELECT * FROM propiedades WHERE id = " . $id);
+        if ($propiedad->rowCount() == 0){
             $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no existe']));
             return $response->withStatus(404);
         }
+
+        //Verificar que no haya reservas de esa propiedad
+        $ocurrencias = $connection->query("SELECT * FROM reservas WHERE propiedad_id = " . $id);
+        if ($ocurrencias->rowCount() != 0){
+            $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no se puede eliminar, debido a que existen reservas registradas de la misma']));
+            return $response->withStatus(400);
+        }
+
+        $stmt = $connection->prepare("DELETE FROM propiedades WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
 
         $connection = null;
 
@@ -689,15 +721,14 @@ $app->get("/propiedades",function(Request $request,Response $response,$args){
 
         //Armamos la consulta SQL
         $sql = "SELECT * FROM propiedades";
-        $campos = ['disponible','localidad_id','fecha_inicio_disponibilidad','cantidad_huespedes'];
         $condiciones = ""
-        foreach ($campos as $key) {
-            if (isset($data['$key']) && !empty($data['$key'])){
-                $condiciones = $condiciones . " $key = $data['$key'] AND";
+        foreach ($data as $key => $value) {
+            if (isset($value) && !empty($value)){
+                $condiciones = $condiciones . " $key = $value AND";
             }
         }
-        $condiciones = substr($condiciones, 0, -4);
         if ($condiciones!=""){
+            $condiciones = substr($condiciones, 0, -4);
             $sql = $sql . " WHERE" . $condiciones;
         }
         
