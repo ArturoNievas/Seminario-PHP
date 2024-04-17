@@ -216,7 +216,7 @@ $app->post('/tipos_propiedad', function (Request $request, Response $response) {
     if (!isset($data['nombre']) || empty($data['nombre'])) {
         $response->getBody()->write(json_encode(['error' => 'El nombre del tipo de propiedad es requerido']));
         return $response->withStatus(400);
-    } elseif (strlen($data['nombre']) <= 50) {
+    } elseif (strlen($data['nombre']) >= 50) {
         $response->getBody()->write(json_encode(['error' => 'El nombre del tipo de propiedad debe tener a lo sumo 50 caracteres']));
         return $response->withStatus(400);
     }
@@ -227,13 +227,13 @@ $app->post('/tipos_propiedad', function (Request $request, Response $response) {
 
         // Verificar que el nombre no esté repetido
         $nombre = $data['nombre'];
-        $repetidos = $connection->query("SELECT * FROM tipos_propiedad WHERE nombre = '$nombre'");
+        $repetidos = $connection->query("SELECT * FROM tipo_propiedades WHERE nombre = '$nombre'");
         if ($repetidos->rowCount() != 0){
             $response->getBody()->write(json_encode(['error' => "Ya existe un tipo de propiedad con el nombre $nombre"]));
             return $response->withStatus(400);
         }
 
-        $stmt = $connection->prepare("INSERT INTO tipos_propiedad (nombre) VALUES (:nombre)");
+        $stmt = $connection->prepare("INSERT INTO tipo_propiedades (nombre) VALUES (:nombre)");
         $stmt->bindParam(':nombre', $data['nombre']);
         $stmt->execute();
         $connection = null; // Cerrar la conexión
@@ -241,7 +241,7 @@ $app->post('/tipos_propiedad', function (Request $request, Response $response) {
         $response->getBody()->write(json_encode(['success' => 'Tipo de propiedad insertado correctamente']));
         return $response->withStatus(200);
     } catch (PDOException $e) {
-        $response->getBody()->write(json_encode(['error' => 'Error al insertar el tipo de propiedad']));
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
         return $response->withStatus(500);
     }
 });
@@ -377,7 +377,7 @@ $app->get("/tipos_propiedad",function(Request $request,Response $response, $args
 //------------------------INQUILINOS------------------------//
 //----------------------------------------------------------//
 
-
+/*
 //CREAR
 $app->post('/inquilinos', function (Request $request, Response $response) {
     $data = $request->getParsedBody();
@@ -629,7 +629,7 @@ $app->get('/inquilinos/{idInquilino}/reservas', function (Request $request, Resp
         return $response->withHeader('Content-Type','application/json');
     }
 });
-
+*/
 
 //-----------------------------------------------------------//
 //------------------------PROPIEDADES------------------------//
@@ -686,7 +686,7 @@ $app->post('/propiedades', function (Request $request, Response $response) {
     } catch (PDOException $e) {
         $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
         return $response->withStatus(500);
-    }
+    }   
 });
 
 //ELIMINAR
@@ -768,7 +768,7 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
         }
         $parametros = substr($parametros, 0, -2);
         
-        $stmt = $connection->prepare("UPDATE propiedades SET $parametros");
+        $stmt = $connection->prepare("UPDATE propiedades SET '$parametros' WHERE id = '$id'");
         
         foreach ($data as $key => $value) {
             if (isset($value) && !empty($value)){
@@ -916,40 +916,63 @@ $app->post('/reservas', function (Request $request, Response $response) {
         $inquilino = $connection->query("SELECT activo FROM inquilinos WHERE id = '$inquilino_id'")->fetch(PDO::FETCH_ASSOC);
         $propiedad_id = $data['propiedad_id'];
         $propiedad = $connection->query("SELECT * FROM propiedades WHERE id = '$propiedad_id'")->fetch(PDO::FETCH_ASSOC);
-        
+        $fecha_inicio_disponibilidad = new DateTime($propiedad['fecha_inicio_disponibilidad']);
+        $fecha = $data['fecha_desde'];
+        $fecha_desde = new DateTime($fecha);
+
         if (!$inquilino['activo']){
             $response->getBody()->write(json_encode(['error' => 'El inquilino no está activo']));
             return $response->withStatus(400);
         } elseif (!$propiedad['disponible']){
             $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible para ser alquilada']));
             return $response->withStatus(400);
-        } elseif (DateTime($data['fecha_desde']) >= DateTime($propiedad['fecha_inicio_disponibilidad'])){
+        } 
+        
+        /*elseif ($fecha_desde <= $fecha_inicio_disponibilidad){
             $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible para la fecha solicitada']));
             return $response->withStatus(400);
-        } else {
-            $campos = "";
-            $parametros = "";
-            foreach ($data as $key => $value) {
-                if (isset($value) && !empty($value)){
-                    $campos = $campos . "$key, ";
-                    $parametros = $parametros . ":$key, ";
-                }
-            }
-            $campos = $campos . "valor_total";
-            $parametros = $parametros . ":valor_total";
+        } */
+        else {
+            $stmt = $connection->prepare("INSERT INTO reservas (propiedad_id, inquilino_id, fecha_desde, cantidad_noches, valor_total) VALUES (:propiedad_id, :inquilino_id, :fecha_desde, :cantidad_noches, :valor_total)");
             
-            $stmt = $connection->prepare("INSERT INTO reservas ($campos) VALUES ($parametros)");
-            
-            $stmt->bindParam(':valor_total',$propiedad['valor_noche'] * $data['cantidad_noches']);
-            foreach ($data as $key => $value) {
-                if (isset($value) && !empty($value)){
-                    $stmt->bindParam(":$key",$value);
-                }
-            }
+            //en esta parte esta el error creo que es porq se pasa el parametro fecha_desde
+
+            $valorTotal = $propiedad['valor_noche'] * $data['cantidad_noches'];
+            $stmt->bindParam(':propiedad_id', $data['propiedad_id']);
+            $stmt->bindParam(':inquilino_id', $data['inquilino_id']);
+            $stmt->bindParam(':fecha_desde', $data['fecha_desde']);
+            $stmt->bindParam(':cantidad_noches', $data['cantidad_noches']);
+            $stmt->bindParam(':valor_total',$valorTotal);
 
             $stmt->execute();
+
+            //modificar la fecha inicio de la propiedad si la misma es menor a la fecha de la reserva
+            $fecha_fin_reserva = clone $fecha_desde;
+            $fecha_fin_reserva = $fecha_fin_reserva->modify('+' . $data['cantidad_noches'] . ' days');
             
-            $connection = null; // Cerrar la conexión
+            if(($data)and($fecha_fin_reserva>$propiedad['fecha_inicio_disponibilidad'])){
+                $fecha_fin_myqsl = $fecha_fin_reserva->format('Y-m-d');
+                
+                $query = $connection->query("UPDATE propiedades SET fecha_inicio_disponibilidad = '$fecha_fin_myqsl' WHERE id = '$propiedad_id'");
+                /*
+                // Obtener los parámetros del servidor desde la solicitud
+                $serverParams = $request->getServerParams();
+
+                // Obtener el puerto del servidor
+                $port = $serverParams['SERVER_PORT'];
+
+                $httpClient = $app->getContainer()->get('http_client');
+                $httpClient->put("http://localhost:'$port'/propiedades/'$propiedad_id'", [
+                    'json' => [
+                        'fecha_inicio_disponibilidad' => $fecha_fin_myqsl
+                    ]
+                ]); 
+                */
+                $response->getBody()->write(json_encode(['message' => 'modificacion realizada']));
+                return $response->withStatus(201);
+            }
+
+           // updateDisponibilidadPropiedad($propiedad_id,$fecha_desde,$data['cantidad_noches']);
 
             $response->getBody()->write(json_encode(['success' => 'La localidad fue agregada correctamente']));
             return $response->withStatus(201);
@@ -1090,5 +1113,43 @@ $app->get("/reservas",function(Request $request,Response $response,$args){
         return $response->withHeader('Content-Type','application/json');
     }
 });
+
+//obtener los datos de los dias en el que la reserva va a estar activa, obtener la fecha_inicio_disponibilidad 
+//y comparar fehcas, si la fecha_fin_reserva > fecha_inicio_propiedad modificar la fecha_inicio_disponibilidad
+
+function updateDisponibilidadPropiedad($propiedad_id,$fecha_desde,$cantidad_dias){
+    $fecha_fin_reserva = clone $fecha_desde;
+    $fecha_fin_reserva = $fecha_fin_reserva->modify('+' . $cantidad_dias . ' days');
+    try {
+        $conn = getConnection();
+
+        $query = $conn->query("SELECT * FROM propiedades WHERE id = '$propiedad_id'");
+        $propiedad = $query->fetch(PDO::FETCH_ASSOC);
+        if(($data)and($fecha_fin_reserva>$propiedad['fecha_inicio_disponibilidad'])){
+            $fecha_fin_myqsl = $fecha_fin_reserva->format('Y-m-d');
+            
+            $query = $conn->query("UPDATE propiedades SET fecha_inicio_disponibilidad = '$fecha_fin_myqsl' WHERE id = '$propiedad_id'");
+            /*
+            // Obtener los parámetros del servidor desde la solicitud
+            $serverParams = $request->getServerParams();
+
+            // Obtener el puerto del servidor
+            $port = $serverParams['SERVER_PORT'];
+
+            $httpClient = $app->getContainer()->get('http_client');
+            $httpClient->put("http://localhost:'$port'/propiedades/'$propiedad_id'", [
+                'json' => [
+                    'fecha_inicio_disponibilidad' => $fecha_fin_myqsl
+                ]
+            ]); 
+            */
+            $response->getBody()->write(json_encode(['message' => 'modificacion realizada']));
+            return $response->withStatus();
+        }
+    } catch (PDOExeption $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withStatus(500);
+    }
+}
 
 $app->run();
