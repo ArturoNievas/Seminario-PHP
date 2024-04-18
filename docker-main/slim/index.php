@@ -135,6 +135,7 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
     // Obtener los datos enviados en el cuerpo de la solicitud
     $data = $request->getParsedBody();
 
+
     // Validar los datos recibidos
     if (!isset($data['nombre']) || empty($data['nombre'])) {
         $response->getBody()->write(json_encode(['error' => 'El nombre de la localidad es requerido']));
@@ -799,7 +800,7 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
 
 //LISTAR
 $app->get("/propiedades",function(Request $request,Response $response,$args){
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams();
 
     try {
         $conn = getConnection();
