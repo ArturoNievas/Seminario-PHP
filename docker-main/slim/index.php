@@ -891,8 +891,6 @@ $app->post('/reservas', function (Request $request, Response $response) {
     // Obtener los datos de la solicitud
     $data = $request->getParsedBody();
 
-    // Validar los datos recibidos
-
     // Verificar que todos los campos requeridos estén presentes
     $requiredFields = ['propiedad_id', 'inquilino_id', 'fecha_desde', 'cantidad_noches'];
     $error = false;
@@ -916,9 +914,9 @@ $app->post('/reservas', function (Request $request, Response $response) {
         $inquilino = $connection->query("SELECT activo FROM inquilinos WHERE id = '$inquilino_id'")->fetch(PDO::FETCH_ASSOC);
         $propiedad_id = $data['propiedad_id'];
         $propiedad = $connection->query("SELECT * FROM propiedades WHERE id = '$propiedad_id'")->fetch(PDO::FETCH_ASSOC);
+        
         $fecha_inicio_disponibilidad = new DateTime($propiedad['fecha_inicio_disponibilidad']);
-        $fecha = $data['fecha_desde'];
-        $fecha_desde = new DateTime($fecha);
+        $fecha_desde = new DateTime($data['fecha_desde']);
 
         if (!$inquilino['activo']){
             $response->getBody()->write(json_encode(['error' => 'El inquilino no está activo']));
@@ -928,15 +926,13 @@ $app->post('/reservas', function (Request $request, Response $response) {
             return $response->withStatus(400);
         } 
         
-        /*elseif ($fecha_desde <= $fecha_inicio_disponibilidad){
+        elseif ($fecha_desde <= $fecha_inicio_disponibilidad){
             $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible para la fecha solicitada']));
             return $response->withStatus(400);
-        } */
+        } 
         else {
             $stmt = $connection->prepare("INSERT INTO reservas (propiedad_id, inquilino_id, fecha_desde, cantidad_noches, valor_total) VALUES (:propiedad_id, :inquilino_id, :fecha_desde, :cantidad_noches, :valor_total)");
             
-            //en esta parte esta el error creo que es porq se pasa el parametro fecha_desde
-
             $valorTotal = $propiedad['valor_noche'] * $data['cantidad_noches'];
             $stmt->bindParam(':propiedad_id', $data['propiedad_id']);
             $stmt->bindParam(':inquilino_id', $data['inquilino_id']);
@@ -945,36 +941,14 @@ $app->post('/reservas', function (Request $request, Response $response) {
             $stmt->bindParam(':valor_total',$valorTotal);
 
             $stmt->execute();
-
-            //modificar la fecha inicio de la propiedad si la misma es menor a la fecha de la reserva
+            
             $fecha_fin_reserva = clone $fecha_desde;
             $fecha_fin_reserva = $fecha_fin_reserva->modify('+' . $data['cantidad_noches'] . ' days');
-            
-            if(($data)and($fecha_fin_reserva>$propiedad['fecha_inicio_disponibilidad'])){
-                $fecha_fin_myqsl = $fecha_fin_reserva->format('Y-m-d');
-                
-                $query = $connection->query("UPDATE propiedades SET fecha_inicio_disponibilidad = '$fecha_fin_myqsl' WHERE id = '$propiedad_id'");
-                /*
-                // Obtener los parámetros del servidor desde la solicitud
-                $serverParams = $request->getServerParams();
 
-                // Obtener el puerto del servidor
-                $port = $serverParams['SERVER_PORT'];
+            $fecha_fin_myqsl = $fecha_fin_reserva->format('Y-m-d');    
+            $query = $connection->query("UPDATE propiedades SET fecha_inicio_disponibilidad = '$fecha_fin_myqsl' WHERE id = '$propiedad_id'");
 
-                $httpClient = $app->getContainer()->get('http_client');
-                $httpClient->put("http://localhost:'$port'/propiedades/'$propiedad_id'", [
-                    'json' => [
-                        'fecha_inicio_disponibilidad' => $fecha_fin_myqsl
-                    ]
-                ]); 
-                */
-                $response->getBody()->write(json_encode(['message' => 'modificacion realizada']));
-                return $response->withStatus(201);
-            }
-
-           // updateDisponibilidadPropiedad($propiedad_id,$fecha_desde,$data['cantidad_noches']);
-
-            $response->getBody()->write(json_encode(['success' => 'La localidad fue agregada correctamente']));
+            $response->getBody()->write(json_encode(['success' => 'La reserva fue agregada correctamente']));
             return $response->withStatus(201);
         }
     } catch (PDOException $e) {
@@ -1020,8 +994,11 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
 
 //EDITAR
 $app->put('/reservas/{id}', function (Request $request, Response $response, $args) {
-    $id = $args['id'];
     $data = $request->getParsedBody();
+    $id = $args['id'];
+
+    $response->getBody()->write(json_encode(['ver datos' => json_encode($data)]));
+    return $response->withStatus(400);
 
     if (!ctype_digit($id) || $id <= 0) {
         return $response->withJson(['error' => 'ID de propiedad no válido'], 400);
@@ -1029,13 +1006,22 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
 
     // Verificar que todos los campos requeridos estén presentes
     $requiredFields = ['propiedad_id', 'inquilino_id', 'fecha_desde', 'cantidad_noches'];
+    $error = false;
+    $campos_faltantes = "";
     foreach ($requiredFields as $field) {
-        if (!isset($data[$field]) || empty($data['nombre'])) {
-            $response->getBody()->write(json_encode(['error' => 'El campo' . $field . ' de la reserva es requerido']));
-            return $response->withStatus(400);        }
+        if (!isset($data[$field]) || empty($data[$field])) {
+            $campos_faltantes = $campos_faltantes . $field .", ";
+            $error = true;
+        }
+    }
+    if ($error){
+        $response->getBody()->write(json_encode(['error' => "Los campos $campos_faltantes" . "son requeridos"]));
+        return $response->withStatus(400);
     }
 
-    if ($data['fecha_desde'] <= date("Y-m-d H:i:s")){
+    $fecha_desde = new DateTime($data['fecha_desde']);
+
+    if ($fecha_desde <= date("Y-m-d H:i:s")){
         $connection = null;
         return $response->withJson(['error' => 'La fecha de inicio debe ser posterior a la fecha actual'], 400);
     }
@@ -1067,7 +1053,14 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         if ($reserva['fecha_desde'] <= date("Y-m-d H:i:s")){
             $connection = null;
             return $response->withJson(['error' => 'No se puede editar una reserva en curso'], 400);
-        }
+        } 
+        
+        $fecha_inicio_disponibilidad = new DateTime($propiedad['fecha_inicio_disponibilidad']);
+        
+        if ($fecha_desde <= $fecha_inicio_disponibilidad){
+            $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible para la fecha solicitada']));
+            return $response->withStatus(400);
+        } 
 
         $stmt = $connection->prepare("UPDATE reservas SET propiedad_id = :propiedad_id, inquilino_id = :inquilino_id, fecha_desde = :fecha_desde, cantidad_noches = :cantidad_noches WHERE id = :id");
         $stmt->bindParam(':id', $id);
@@ -1113,43 +1106,5 @@ $app->get("/reservas",function(Request $request,Response $response,$args){
         return $response->withHeader('Content-Type','application/json');
     }
 });
-
-//obtener los datos de los dias en el que la reserva va a estar activa, obtener la fecha_inicio_disponibilidad 
-//y comparar fehcas, si la fecha_fin_reserva > fecha_inicio_propiedad modificar la fecha_inicio_disponibilidad
-
-function updateDisponibilidadPropiedad($propiedad_id,$fecha_desde,$cantidad_dias){
-    $fecha_fin_reserva = clone $fecha_desde;
-    $fecha_fin_reserva = $fecha_fin_reserva->modify('+' . $cantidad_dias . ' days');
-    try {
-        $conn = getConnection();
-
-        $query = $conn->query("SELECT * FROM propiedades WHERE id = '$propiedad_id'");
-        $propiedad = $query->fetch(PDO::FETCH_ASSOC);
-        if(($data)and($fecha_fin_reserva>$propiedad['fecha_inicio_disponibilidad'])){
-            $fecha_fin_myqsl = $fecha_fin_reserva->format('Y-m-d');
-            
-            $query = $conn->query("UPDATE propiedades SET fecha_inicio_disponibilidad = '$fecha_fin_myqsl' WHERE id = '$propiedad_id'");
-            /*
-            // Obtener los parámetros del servidor desde la solicitud
-            $serverParams = $request->getServerParams();
-
-            // Obtener el puerto del servidor
-            $port = $serverParams['SERVER_PORT'];
-
-            $httpClient = $app->getContainer()->get('http_client');
-            $httpClient->put("http://localhost:'$port'/propiedades/'$propiedad_id'", [
-                'json' => [
-                    'fecha_inicio_disponibilidad' => $fecha_fin_myqsl
-                ]
-            ]); 
-            */
-            $response->getBody()->write(json_encode(['message' => 'modificacion realizada']));
-            return $response->withStatus();
-        }
-    } catch (PDOExeption $e) {
-        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
-        return $response->withStatus(500);
-    }
-}
 
 $app->run();
