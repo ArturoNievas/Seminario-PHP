@@ -1036,22 +1036,20 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
 
         $reserva = $reserva->fetch(PDO::FETCH_ASSOC);
 
+        $propiedad_id = $reserva['propiedad_id'];
+
         $fecha_actual = new DateTime(); // Obtiene la fecha y hora actuales
-        $fecha_actual_str = $fecha_actual->format('Y-m-d H:i:s'); // Convertir fecha actual a cadena
 
         $fecha_desde_reserva = new DateTime($reserva['fecha_desde']);
-        $fecha_desde_reserva_str = $fecha_desde_reserva->format('Y-m-d H:i:s'); // Convertir fecha de reserva a cadena
 
-        $fecha_desde_reserva_dt = new DateTime($fecha_desde_reserva_str);
+        $diferencia_desde = $fecha_desde_reserva->diff($fecha_actual);//obtener la diferencia entre la fecha actual y la fecha de inicio de la reserva
 
-        $diferencia = $fecha_desde_reserva_dt->diff($fecha_actual);
-        if ($diferencia->format('%R') === '-') {
+        $fecha_fin_reserva =  $fecha_desde_reserva->modify('+' . $reserva['cantidad_noches'] . ' days');//obtener la fecha de fin de la reserva
+
+        $diferecia_hasta = $fecha_fin_reserva->diff($fecha_actual);//obtener la diferencia entre la fecha actual y la fecha de fin de la reserva
+        if (($diferencia_desde->format('%R') === '+') && ($diferencia_hasta->format('%R') === '-')) {
             $connection = null;
-            $response->getBody()->write(json_encode([
-                'error' => 'No se puede cancelar una reserva que ya ha comenzado',
-                'fecha_actual' => $fecha_actual_str,
-                'fecha_desde_reserva' => $fecha_desde_reserva_str
-            ]));
+            $response->getBody()->write(json_encode(['error' => 'No se puede cancelar una reserva que ya ha comenzado']));
             return $response->withStatus(400);
         }
 
@@ -1059,15 +1057,8 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
-        //modificar la fecha de disponibilidad 
-        /* --------------------------------------------------------------  NO ANDA, REVISAR --------------------------------------------------------------------------
-        $propiedad_id=$reserva['propiedad_id'];
-        $stmt = $connection->query("SELECT * FROM propiedades WHERE id = '$propiedad_id'");
-        $propiedad = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $fecha_fin_mayor = new DateTime('0000-00-00');
-
         $stmt = $connection->query("SELECT * FROM reservas WHERE propiedad_id = '$propiedad_id'");
+        $fecha_fin_mayor = new DateTime();
 
         while ($reserva = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $fecha_desde = new DateTime($reserva['fecha_desde']);
@@ -1081,8 +1072,15 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
 
         $fecha_fin_mayor_format = $fecha_fin_mayor->format('Y-m-d');
 
-        $stmt = $connection->query("UPDATE propiedades SET fecha_inicio_disponibilidad='$fecha_fin_mayor_format' WHERE id = '$propiedad_id'");
-        */
+        $stmt = $connection->query("SELECT * FROM propiedades WHERE id = '$propiedad_id'");
+        $propiedad = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $fecha_inicio_disponibilidad_dt = new DateTime($propiedad['fecha_inicio_disponibilidad']);
+        $diferencia = $fecha_inicio_disponibilidad_dt->diff($fecha_fin_mayor);
+        if ($diferencia->format('%R') === '-') {
+            // Aquí actualizas la fecha de inicio de disponibilidad si es necesario
+            $stmt = $connection->query("UPDATE propiedades SET fecha_inicio_disponibilidad = '$fecha_fin_mayor_format'  WHERE id = '$propiedad_id'");
+        } 
 
         $connection = null;
 
