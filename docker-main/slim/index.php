@@ -33,6 +33,77 @@ function getConnection(){
     return $connection;
 }
 
+function esFecha($cadena, $formato = 'Y-m-d') {
+    $fecha = DateTime::createFromFormat($formato, $cadena);
+    return $fecha && $fecha->format($formato) === $cadena;
+}
+
+/*
+FUNCION PARA VALIDAR REQUISITOS
+
+Se envía la información obtenida en formato array como primer parámetro y
+en el segundo parámetro se envía un array de la siguiente forma:
+    $validacion = [
+        'nombre' => ['
+            'requerido'
+            'longitud' => 18
+        ]
+        'documento' => [
+            'int'
+        ]
+        'fecha_inicio' => [
+            'fecha'
+        ]
+    ]
+El campo 'nombre' es requerido y no debe tener más de 18 caracteres
+El campo 'documento' debe ser un numero entero
+El campo 'fecha' debe ser de tipo fecha
+
+La función devuelve un array con los errores, si está vacío significa que no hubo errores
+*/
+function validarRequisitos($data,$validacion) {
+    $error = [];
+
+    foreach ($validacion as $campo => $reglas){
+        $existe = isset($datos[$campo]) && !empty($datos[$campo]);
+        foreach ($reglas as $regla => $valor){
+            switch ($valor) {
+                case 'requerido':
+                    if (!$existe) {
+                        $errores[$campo] = "El campo $campo es requerido.";
+                    }
+                    break;
+                case 'fecha':
+                    if ($existe && !esFecha($datos[$campo])) {
+                        $errores[$campo] = "El campo $campo debe ser una fecha válida.";
+                    }
+                    break;
+                case 'int' :
+                    if ($existe && (!is_int($datos[$campo]) || $datos[$campo] < 0)) {
+                        $errores[$campo] = "El campo $campo debe ser un número entero positivo.";
+                    }
+                    break;
+                default:
+                    if ($existe && $regla == 'longitud' && !strlen($datos[$campo]) > $valor){
+                        $errores[$campo] = "El campo $campo debe tener un máximo de $valor caracteres.";
+                    }
+                    break;
+            }
+        }
+    }
+
+    return $errores;
+}
+
+function fechaEnIntervalo($fecha, $inicioIntervalo, $finIntervalo) {
+    // Convertir las fechas a objetos DateTime para facilitar la comparación
+    $fecha = new DateTime($fecha);
+    $inicioIntervalo = new DateTime($inicioIntervalo);
+    $finIntervalo = new DateTime($finIntervalo);
+
+    // Verificar si la fecha está dentro del intervalo
+    return ($fecha >= $inicioIntervalo && $fecha <= $finIntervalo);
+}
 //-----------------------------------------------------------//
 //------------------------LOCALIDADES------------------------//
 //-----------------------------------------------------------//
@@ -1123,7 +1194,7 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
 
     $fecha_desde = new DateTime($data['fecha_desde']);
 
-    if ($fecha_desde <= date("Y-m-d H:i:s")){
+    if ($fecha_desde <= date("Y-m-d")){
         $connection = null;
         $response->getBody()->write(json_encode(['error' => 'La fecha de inicio debe ser posterior a la fecha actual']));
         return $response->withStatus(400);
@@ -1151,22 +1222,29 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         if (empty($reserva)){
             $connection = null;
             $response->getBody()->write(json_encode(['error' => 'La reserva con el ID especificado no existe']));
-            return $response->withStatus(400);
+            return $response->withStatus(404);
         }
 
-        if ($reserva['fecha_desde'] <= date("Y-m-d H:i:s")){
+        //Verificamos que la reserva no esté en curso
+        $inicio = $reserva['fecha_desde'];
+        $fin = $reserva['fecha_desde'];
+        date_add($date,date_interval_create_from_date_string($reserva['cantidad_noches']. " days"));
+
+        if (fechaEnIntervalo(date("Y-m-d"),$inicio,$fin)){
             $connection = null;
             $response->getBody()->write(json_encode(['error' => 'No se puede editar una reserva en curso']));
             return $response->withStatus(400);
         } 
         
+        //Verificamos que la propiedad esté disponible para la fecha solicitada
         $fecha_inicio_disponibilidad = new DateTime($nueva_propiedad['fecha_inicio_disponibilidad']);
         
         if ($fecha_desde <= $fecha_inicio_disponibilidad){
             $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible para la fecha solicitada']));
             return $response->withStatus(400);
-        } 
+        }
 
+        //Editamos la reserva
         $stmt = $connection->prepare("UPDATE reservas SET propiedad_id = :propiedad_id, inquilino_id = :inquilino_id, fecha_desde = :fecha_desde, cantidad_noches = :cantidad_noches WHERE id = :id");
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':propiedad_id',$data['propiedad_id']);
@@ -1180,9 +1258,9 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         $connection = null;
 
         $response->getBody()->write(json_encode(['message' => 'Reserva actualizada correctamente']));
-        return $response->withStatus(400);
+        return $response->withStatus(200);
     } catch (PDOException $e) {
-        $response->getBody()->write(json_encode(['error' => 'Error al actualizar la reserva']));
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
         return $response->withStatus(500);
     }
 });
