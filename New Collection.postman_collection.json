@@ -1,0 +1,1255 @@
+{
+	"info": {
+		"_postman_id": "c0332da4-2f32-4226-9723-d37bde060760",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16349549"
+	},
+	"item": [
+		{
+			"name": "Localidades",
+			"item": [
+				{
+					"name": "localidades",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "Alejandro Korn",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/localidades",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"localidades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localidades/{id}",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "id",
+								"value": "1",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Guernica\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:80/localidades/2",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"localidades",
+								"2"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localidades",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:80/localidades",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"localidades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "localidades/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:80/localidades/2",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"localidades",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tipos_propiedad",
+			"item": [
+				{
+					"name": "tipos_propiedad",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "automóvil",
+									"type": "text"
+								},
+								{
+									"key": "id",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/tipos_propiedad",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"tipos_propiedad"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tipos_propiedad",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "automóvil",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/tipos_propiedad",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"tipos_propiedad"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tipos_propiedad/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "automóvil",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/tipos_propiedad/1",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"tipos_propiedad",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tipos_propiedad/{id} Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"asda\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:80/tipos_propiedad/3",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"tipos_propiedad",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "inquilinos",
+			"item": [
+				{
+					"name": "inquilinos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:80/inquilinos",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"inquilinos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inquilinos/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:80/inquilinos/2",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"inquilinos",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inquilinos/{idInquilino}/reservas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:80/inquilinos/2/reservas",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"inquilinos",
+								"2",
+								"reservas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inquilinos/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:80/inquilinos/4",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"inquilinos",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inquilinos/{id}",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\":\"krina\",\r\n    \"apellido\":\"asdas\",\r\n    \"documento\":\"6\",\r\n    \"email\":\"aa\",\r\n    \"activo\":\"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:80/inquilinos/4",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"inquilinos",
+								"4"
+							],
+							"query": [
+								{
+									"key": "nombre",
+									"value": "krina",
+									"disabled": true
+								},
+								{
+									"key": "apellido",
+									"value": "asdas",
+									"disabled": true
+								},
+								{
+									"key": "documento",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "aa",
+									"disabled": true
+								},
+								{
+									"key": "activo",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inquilinos",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nombre",
+									"value": "krina",
+									"type": "text"
+								},
+								{
+									"key": "apellido",
+									"value": "asdas",
+									"type": "text"
+								},
+								{
+									"key": "documento",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "aa",
+									"type": "text"
+								},
+								{
+									"key": "activo",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/inquilinos",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"inquilinos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "propiedades",
+			"item": [
+				{
+					"name": "propiedades",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"type": "text"
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"type": "text"
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"type": "text"
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/propiedades",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"propiedades"
+							],
+							"query": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "propiedades",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/propiedades",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"propiedades"
+							],
+							"query": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "propiedades/{id}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/propiedades/3",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"propiedades",
+								"3"
+							],
+							"query": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "propiedades/{id}",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"domicilio\": \"aa\",\r\n    \"localidad_id\": 1,\r\n    \"cantidad_habitaciones\": 2,\r\n    \"cantidad_banios\": 3,\r\n    \"cochera\": 1,\r\n    \"cantidad_huespedes\": 2,\r\n    \"fecha_inicio_disponibilidad\": \"2024-04-04\",\r\n    \"cantidad_dias\": 100,\r\n    \"disponible\": 1,\r\n    \"valor_noche\": 200,\r\n    \"tipo_propiedad_id\": 1,\r\n    \"imagen\": null,\r\n    \"tipo_imagen\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:80/propiedades/5",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"propiedades",
+								"5"
+							],
+							"query": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "propiedades/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/propiedades/4",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"propiedades",
+								"4"
+							],
+							"query": [
+								{
+									"key": "domicilio",
+									"value": "kennedy",
+									"disabled": true
+								},
+								{
+									"key": "localidad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_huespedes",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "fecha_inicio_disponibilidad",
+									"value": "2024-04-16",
+									"disabled": true
+								},
+								{
+									"key": "cantidad_dias",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "disponible",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "valor_noche",
+									"value": "200",
+									"disabled": true
+								},
+								{
+									"key": "tipo_propiedad_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "imagen",
+									"value": "imagen",
+									"disabled": true
+								},
+								{
+									"key": "tipo_imagen",
+									"value": "png",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "reservas",
+			"item": [
+				{
+					"name": "reservas",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "propiedad_id",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "inquilino_id",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "fecha_desde",
+									"value": "2024-04-20",
+									"type": "text"
+								},
+								{
+									"key": "cantidad_noches",
+									"value": "15",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/reservas",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"reservas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reservas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "propiedad_id",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "inquilino_id",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "fecha_desde",
+									"value": "2024-04-20",
+									"type": "text"
+								},
+								{
+									"key": "cantidad_noches",
+									"value": "15",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/reservas",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"reservas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reservas/{id}",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "id",
+								"value": "21",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "propiedad_id",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "inquilino_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "fecha_desde",
+									"value": "2024-05-2",
+									"type": "text"
+								},
+								{
+									"key": "cantidad_noches",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/reservas/1",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"reservas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reservas/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "id",
+								"value": "21",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "propiedad_id",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "inquilino_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "fecha_desde",
+									"value": "2024-05-2",
+									"type": "text"
+								},
+								{
+									"key": "cantidad_noches",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:80/reservas/1",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"reservas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
