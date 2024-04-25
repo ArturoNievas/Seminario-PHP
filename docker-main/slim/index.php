@@ -95,15 +95,49 @@ function validarRequisitos($data,$validacion) {
     return $errores;
 }
 
-function fechaEnIntervalo($fecha, $inicioIntervalo, $finIntervalo) {
+function fechaEnIntervalo($fecha, $inicioIntervalo, $duracion) {
     // Convertir las fechas a objetos DateTime para facilitar la comparación
-    $fecha = new DateTime($fecha);
-    $inicioIntervalo = new DateTime($inicioIntervalo);
-    $finIntervalo = new DateTime($finIntervalo);
+    $inicio = new DateTime($inicioIntervalo);
+    $fin = new DateTime($inicioIntervalo);
+    date_add($fin,date_interval_create_from_date_string($duracion. " days"));
+
 
     // Verificar si la fecha está dentro del intervalo
-    return ($fecha >= $inicioIntervalo && $fecha <= $finIntervalo);
+    return ($fecha >= $inicio && $fecha <= $fin);
 }
+
+function seSolapan($inicio1,$fin1,$inicio2,$fin2) {
+    return !($fin1 < $inicio2 || $inicio1 > $fin2);
+}
+
+/*
+function propiedadDisponible($reservas,$inicio,$duracion) {
+    $fecha_inicio = new DateTime($inicio);
+    $fecha_fin = new DateTime($inicio);
+    date_add($fecha_fin,date_interval_create_from_date_string($duracion. " days"));
+
+    foreach ($reservas as $reserva) {
+        $r_inicio = new DateTime($reserva['fecha_desde']);
+        $r_fin = new DateTime($reserva['fecha_desde']);
+        date_add($r_fin,date_interval_create_from_date_string($reserva['cantidad_noches']. " days"));
+        $disponible = !seSolapan($fecha_inicio,$fecha_fin,$r_inicio,$r_fin);
+        if (!$disponible) {
+            break;
+        }
+    }
+
+    return $disponible;
+}
+*/
+
+function propiedadDisponible($connection,$propiedad_id,$inicioIntervalo,$duracion) {
+    $fecha_inicio = new DateTime($inicioIntervalo)->format("Y,m,d");
+    $fecha_fin = new DateTime($inicioIntervalo);
+    date_add($fecha_fin,date_interval_create_from_date_string($duracion. " days"))->format("Y,m,d");
+    $reservas = $connection->query("SELECT * FROM reservas WHERE propiedad_id = $propiedad_id AND ")
+}
+
+
 //-----------------------------------------------------------//
 //------------------------LOCALIDADES------------------------//
 //-----------------------------------------------------------//
@@ -1118,9 +1152,9 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
         $fecha_fin_reserva =  $fecha_desde_reserva->modify('+' . $reserva['cantidad_noches'] . ' days');//obtener la fecha de fin de la reserva
 
         $diferecia_hasta = $fecha_fin_reserva->diff($fecha_actual);//obtener la diferencia entre la fecha actual y la fecha de fin de la reserva
-        if (($diferencia_desde->format('%R') === '+') && ($diferencia_hasta->format('%R') === '-')) {
+        if ($diferencia_desde->format('%R') === '+') {
             $connection = null;
-            $response->getBody()->write(json_encode(['error' => 'No se puede cancelar una reserva que ya ha comenzado']));
+            $response->getBody()->write(json_encode(['error' => 'No se puede cancelar una reserva que pasada o en curso']));
             return $response->withStatus(400);
         }
 
@@ -1132,8 +1166,7 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
         $fecha_fin_mayor = new DateTime();
 
         while ($reserva = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $fecha_desde = new DateTime($reserva['fecha_desde']);
-            $fecha_fin_reserva = clone $fecha_desde;
+            $fecha_fin_reserva = new DateTime($reserva['fecha_desde']);
             $fecha_fin_reserva->modify('+' . $reserva['cantidad_noches'] . ' days');
 
             if ($fecha_fin_reserva > $fecha_fin_mayor) {
@@ -1169,9 +1202,6 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
     $data = $request->getParsedBody();
     $id = $args['id'];
 
-    $response->getBody()->write(json_encode(['ver datos' => json_encode($data)]));
-    return $response->withStatus(400);
-
     if (!ctype_digit($id) || $id <= 0) {
         $response->getBody()->write(json_encode(['error' => 'ID de propiedad no válido']));
         return $response->withStatus(400);
@@ -1203,21 +1233,21 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
     try {
         $connection = getConnection();
 
-        $nuevo_inquilino = $connection->query("SELECT * FROM inquilinos WHERE id = " . $data['inquilino_id']);
+        $nuevo_inquilino = $connection->query("SELECT * FROM inquilinos WHERE id = " . $data['inquilino_id'])->fetch(PDO::FETCH_ASSOC);
         if (!$nuevo_inquilino['activo']){
             $connection = null;
             $response->getBody()->write(json_encode(['error' => 'El nuevo inquilino no está activo']));
             return $response->withStatus(400);
         }
         
-        $nueva_propiedad = $connection->query("SELECT * FROM propiedades WHERE id = " . $data['propiedad_id']);
+        $nueva_propiedad = $connection->query("SELECT * FROM propiedades WHERE id = " . $data['propiedad_id'])->fetch(PDO::FETCH_ASSOC);
         if (!$nueva_propiedad['disponible']){
             $connection = null;
             $response->getBody()->write(json_encode(['error' => 'La nueva propiedad no está disponible']));
             return $response->withStatus(400);
         }
 
-        $reserva = $connection->query("SELECT * FROM reservas WHERE id = " . $id);
+        $reserva = $connection->query("SELECT * FROM reservas WHERE id = " . $id)->fetch(PDO::FETCH_ASSOC);
 
         if (empty($reserva)){
             $connection = null;
@@ -1226,11 +1256,8 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         }
 
         //Verificamos que la reserva no esté en curso
-        $inicio = $reserva['fecha_desde'];
-        $fin = $reserva['fecha_desde'];
-        date_add($date,date_interval_create_from_date_string($reserva['cantidad_noches']. " days"));
 
-        if (fechaEnIntervalo(date("Y-m-d"),$inicio,$fin)){
+        if (fechaEnIntervalo(date("Y-m-d"),$reserva['fecha_desde'],$reserva['cantidad_noches'])){
             $connection = null;
             $response->getBody()->write(json_encode(['error' => 'No se puede editar una reserva en curso']));
             return $response->withStatus(400);
