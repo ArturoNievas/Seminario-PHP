@@ -62,7 +62,7 @@ El campo 'fecha' debe ser de tipo fecha
 La función devuelve un array con los errores, si está vacío significa que no hubo errores
 */
 function validarRequisitos($datos,$validacion) {
-    $error = [];
+    $errores = [];
 
     foreach ($validacion as $campo => $reglas){
         $existe = isset($datos[$campo]) && !empty($datos[$campo]);
@@ -79,15 +79,15 @@ function validarRequisitos($datos,$validacion) {
                     }
                     break;
                 case 'int' :
-                    if ($existe && (!is_int($datos[$campo]) || $datos[$campo] < 0)) {
+                    if ($existe && (!is_numeric($datos[$campo]) || $datos[$campo] < 0)) {
                         $errores[$campo] = "El campo $campo debe ser un número entero positivo.";
                     }
                     break;
-                case 'bool' :
-                    if ($existe && (!is_bool($datos[$campo]))) {
-                        $errores[$campo] = "El campo $campo debe ser un booleano.";
+                case 'activo' :
+                    if ($existe && (!is_numeric($datos[$campo]) || ($datos[$campo] != 0 && $datos[$campo] != 1))) {
+                        $errores[$campo] = "El campo $campo debe ser 0 o 1.";
                     }
-                    break;
+                    break;                    
                 case 'double' :
                     if ($existe && (!is_double($datos[$campo]) || $datos[$campo] <= 0)) {
                         $errores[$campo] = "El campo $campo debe ser un número positivo.";
@@ -183,11 +183,11 @@ $app->post('/localidades', function (Request $request, Response $response) {
         $connection = getConnection();
 
         // Verificar que no existan localidades registradas con el mismo nombre
-        $stmt = $connection->prepare("SELECT * FROM localidades WHERE nombre = ?");
-        $stmt->bindParam("s",$data['nombre']);
+        $stmt = $connection->prepare("SELECT * FROM localidades WHERE nombre = :nombre");
+        $stmt->bindParam(":nombre",$data['nombre']);
         $stmt->execute();
-        $localidades_repetidas = $stmt->getResult();
-        if ($localidades_repetidas->rowCount()>0){
+        $localidades_repetidas = $stmt->fetchAll();
+        if (Count($localidades_repetidas)>0){
             $response->getBody()->write(json_encode(['nombre' => 'Ya existe una localidad registrada con ese nombre']));
             return $response->withStatus(400);
         }
@@ -525,10 +525,6 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
 
     // Validar los datos recibidos
     $validacion = [
-        'nombre_usuario' => [
-            'requerido',
-            'longitud' => 20
-        ],
         'apellido' => [
             'requerido',
             'longitud' => 15
@@ -550,6 +546,7 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
             'bool'
         ]
     ];
+    
     $errores = validarRequisitos($data,$validacion);
     if (!empty($errores)) {
         $response->getBody()->write(json_encode($errores));
@@ -568,8 +565,7 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
         }
 
         // Insertar inquilino en la base de datos
-        $stmt = $connection->prepare("INSERT INTO inquilinos (nombre_usuario, apellido, nombre, documento, email, activo) VALUES (:nombre_usuario, :apellido, :nombre, :documento, :email, :activo)");
-        $stmt->bindParam(':nombre_usuario', $data['nombre_usuario']);
+        $stmt = $connection->prepare("INSERT INTO inquilinos (apellido, nombre, documento, email, activo) VALUES (:apellido, :nombre, :documento, :email, :activo)");
         $stmt->bindParam(':apellido', $data['apellido']);
         $stmt->bindParam(':nombre', $data['nombre']);
         $stmt->bindParam(':documento', $data['documento']);
