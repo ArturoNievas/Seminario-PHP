@@ -61,41 +61,46 @@ El campo 'fecha' debe ser de tipo fecha
 
 La función devuelve un array con los errores, si está vacío significa que no hubo errores
 */
-function validarRequisitos($datos,$validacion) {
+function validarRequisitos($datos, $validacion)
+{
     $errores = [];
 
-    foreach ($validacion as $campo => $reglas){
-        $existe = isset($datos[$campo]) && !empty($datos[$campo]);
-        foreach ($reglas as $regla => $valor){
+    foreach ($validacion as $campo => $reglas) {
+        $existe=isset($datos[$campo]) && !empty($datos[$campo]);
+        foreach ($reglas as $regla => $valor) {
             switch ($valor) {
                 case 'requerido':
-                    if (!$existe) {
-                        $errores[$campo] = "El campo $campo es requerido.";
+                    if ($existe==0) {
+                        $errores[$campo][] = "El campo $campo es requerido.";
                     }
                     break;
                 case 'fecha':
                     if ($existe && !esFecha($datos[$campo])) {
-                        $errores[$campo] = "El campo $campo debe ser una fecha en el formato 'YY-MM-DD'.";
+                        $errores[$campo][] = "El campo $campo debe ser una fecha en el formato 'YY-MM-DD'.";
                     }
                     break;
-                case 'int' :
+                case 'int':
                     if ($existe && (!is_numeric($datos[$campo]) || $datos[$campo] < 0)) {
-                        $errores[$campo] = "El campo $campo debe ser un número entero positivo.";
+                        $errores[$campo][] = "El campo $campo debe ser un número entero positivo.";
                     }
                     break;
-                case 'activo' :
-                    if ($existe && (!is_numeric($datos[$campo]) || ($datos[$campo] != 0 && $datos[$campo] != 1))) {
-                        $errores[$campo] = "El campo $campo debe ser 0 o 1.";
+                case 'bool':
+                    if ($existe) {
+                        // Convertir el valor del campo a un booleano
+                        $booleano = filter_var($datos[$campo], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                        if ($booleano === null) {
+                            $errores[$campo][] = "El campo $campo debe ser un booleano válido (true o false).";
+                        }
                     }
-                    break;                    
-                case 'double' :
-                    if ($existe && (!is_double($datos[$campo]) || $datos[$campo] <= 0)) {
-                        $errores[$campo] = "El campo $campo debe ser un número positivo.";
+                    break;
+                case 'double':
+                    if ($existe && (!is_numeric($datos[$campo]) || $datos[$campo] <= 0)) {
+                        $errores[$campo][] = "El campo $campo debe ser un número positivo.";
                     }
                     break;
                 default:
-                    if ($existe && $regla == 'longitud' && !strlen($datos[$campo]) > $valor){
-                        $errores[$campo] = "El campo $campo debe tener un máximo de $valor caracteres.";
+                    if ($existe && $regla == 'longitud' && strlen($datos[$campo]) > $valor) {
+                        $errores[$campo][] = "El campo $campo debe tener un máximo de $valor caracteres.";
                     }
                     break;
             }
@@ -104,6 +109,7 @@ function validarRequisitos($datos,$validacion) {
 
     return $errores;
 }
+
 
 function fechaEnIntervalo($fecha, $inicioIntervalo, $duracion) {
     // Convertir las fechas a objetos DateTime para facilitar la comparación
@@ -122,36 +128,41 @@ function seSolapan($inicio1,$fin1,$inicio2,$fin2) {
 
 //Función que verifica que la propiedad esté disponible para el intervalo de tiempo ingresado
 function propiedadDisponible($connection,$propiedad_id,$inicioIntervalo,$duracion,$reserva_id=null) {
+    $fecha_actual = new DateTime();
+    if($inicioIntervalo<$fecha_actual){
+        return false;
+    }
     // Convertir la fecha de inicio al formato deseado
-    $fecha_inicio = (new DateTime($inicioIntervalo))->format("Y-m-d");
+    $fecha_inicio = $inicioIntervalo->format("Y-m-d");
     // Calcular la fecha final sumando la duración al inicio
-    $fecha_fin = (new DateTime($inicioIntervalo))->add(new DateInterval("P{$duracion}D"))->format("Y-m-d");
+    $fecha_fin = $inicioIntervalo->add(new DateInterval("P{$duracion}D"))->format("Y-m-d");
     
     // Consulta SQL preparada para evitar inyecciones de SQL
     $query = "SELECT * 
               FROM reservas r INNER JOIN propiedades p ON r.propiedad_id = p.id
-              WHERE propiedad_id = ? 
-                  AND NOT (? >= fecha_hasta OR ? <= ADDDATE(fecha_desde, INTERVAL cantidad_noches DAY)) 
-                  AND ? > p.fecha_inicio_disponibilidad";
+              WHERE propiedad_id = '$propiedad_id'
+                  AND NOT ('$fecha_fin' <= fecha_desde OR '$fecha_inicio' >= ADDDATE(fecha_desde, INTERVAL cantidad_noches DAY))
+                  AND '$fecha_fin' > p.fecha_inicio_disponibilidad";
 
     // Si se proporciona un ID de reserva, excluimos esa reserva de la verificación de disponibilidad
     if ($reserva_id !== null) {
-        $query = $query . " AND reserva_id <> ?";
+        $query = $query . " AND reserva_id <> '$reserva_id'";
     }
 
     // Preparar la consulta
-    $stmt = $connection->prepare($query);
+    $stmt = $connection->query($query);
 
+    /*
     // Vincular los parámetros y ejecutar la consulta
     if ($reserva_id !== null) {
         $stmt->bind_param("issssi", $propiedad_id, $fecha_fin, $fecha_inicio, $fecha_inicio, $reserva_id);
     } else {
         $stmt->bind_param("issss", $propiedad_id, $fecha_fin, $fecha_inicio, $fecha_inicio);
     }
-
+    */
     $stmt->execute();
 
-    return ($stmt->get_result()->rowCount() == 0);
+    return ($stmt->rowCount() == 0);
 }
 
 
@@ -546,7 +557,6 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
             'bool'
         ]
     ];
-    
     $errores = validarRequisitos($data,$validacion);
     if (!empty($errores)) {
         $response->getBody()->write(json_encode($errores));
@@ -564,13 +574,19 @@ $app->post('/inquilinos', function (Request $request, Response $response) {
             return $response->withStatus(400);
         }
 
+        // Convertir el valor de 'activo' a un booleano
+        $activo = strtolower($data['activo']) === 'true';
+
+        // Convertir el booleano a entero (0 o 1)
+        $activo_int = $activo ? 1 : 0;
+
         // Insertar inquilino en la base de datos
         $stmt = $connection->prepare("INSERT INTO inquilinos (apellido, nombre, documento, email, activo) VALUES (:apellido, :nombre, :documento, :email, :activo)");
         $stmt->bindParam(':apellido', $data['apellido']);
         $stmt->bindParam(':nombre', $data['nombre']);
         $stmt->bindParam(':documento', $data['documento']);
         $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':activo', $data['activo']);
+        $stmt->bindParam(':activo', $activo_int);
         $stmt->execute();
         $connection = null;
 
@@ -636,10 +652,6 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
 
     // Validar los datos recibidos
     $validacion = [
-        'nombre_usuario' => [
-            'requerido',
-            'longitud' => 20
-        ],
         'apellido' => [
             'requerido',
             'longitud' => 15
@@ -854,10 +866,6 @@ $app->post('/propiedades', function (Request $request, Response $response) {
             'requerido',
             'double'
         ],
-        'moneda_id' => [
-            'requerido',
-            'int'
-        ],
         'tipo_propiedad_id' => [
             'requerido',
             'int'
@@ -883,12 +891,21 @@ $app->post('/propiedades', function (Request $request, Response $response) {
         }
         $campos = substr($campos, 0, -2);
         $parametros = substr($parametros, 0, -2);
-        
+
         $stmt = $connection->prepare("INSERT INTO propiedades ($campos) VALUES ($parametros)");
-        
+
         foreach ($data as $key => $value) {
             if (isset($value) && !empty($value)){
-                $stmt->bindParam(":$key",$value);
+                if($key == "disponible"){
+                    // Convertir el valor de 'activo' a un booleano
+                    $activo = strtolower($data['disponible']) === 'true';
+
+                    // Convertir el booleano a entero (0 o 1)
+                    $activo_int = $activo ? 1 : 0;
+                    $stmt->bindParam(":$key", $activo_int);
+                }else{
+                    $stmt->bindParam(":$key", $data[$key]);    
+                }
             }
         }
 
@@ -995,10 +1012,6 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
             'requerido',
             'double'
         ],
-        'moneda_id' => [
-            'requerido',
-            'int'
-        ],
         'tipo_propiedad_id' => [
             'requerido',
             'int'
@@ -1013,6 +1026,7 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
     try {
         $connection = getConnection();
 
+        /*
         $fecha_inicio_disponibilidad = $data["fecha_inicio_disponibilidad"];
 
         $fecha_fin_mayor = new DateTime('0000-00-00');
@@ -1040,6 +1054,7 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
             $response->getBody()->write(json_encode(['error' => "No se puede modificar la fecha de inicio de disponibilidad de una propiedad para que sea anterior a la fecha requerida por la última reserva realizada"]));
             return $response->withStatus(404);
         } 
+        */
         $parametros = "";
         foreach ($data as $key => $value) {
             if (isset($value) && !empty($value)){
@@ -1373,51 +1388,48 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
 // ----------------------------------------------------  FALTA CHECKEAR --------------------------------------------------------------------
 //EDITAR
 $app->put('/reservas/{id}', function (Request $request, Response $response, $args) {
+    // Obtener los datos de la solicitud
     $data = $request->getParsedBody();
-    $id = $args['id'];
+    $id = $args["id"];
 
-    if (!ctype_digit($id) || $id <= 0) {
-        $response->getBody()->write(json_encode(['error' => 'ID de propiedad no válido']));
+    // Validar los datos recibidos
+    $validacion = [
+        'propiedad_id' => [
+            'requerido',
+            'int'
+        ],
+        'inquilino_id' => [
+            'requerido',
+            'int'
+        ],
+        'fecha_desde' => [
+            'requerido',
+            'fecha'
+        ],
+        'cantidad_noches' => [
+            'requerido',
+            'int'
+        ]
+    ];
+    $errores = validarRequisitos($data,$validacion);
+    if (!empty($errores)) {
+        $response->getBody()->write(json_encode($errores));
         return $response->withStatus(400);
     }
-
-    // Verificar que todos los campos requeridos estén presentes
-    $requiredFields = ['propiedad_id', 'inquilino_id', 'fecha_desde', 'cantidad_noches'];
-    $error = false;
-    $campos_faltantes = "";
-    foreach ($requiredFields as $field) {
-        if (!isset($data[$field]) || empty($data[$field])) {
-            $campos_faltantes = $campos_faltantes . $field .", ";
-            $error = true;
-        }
-    }
-    if ($error){
-        $response->getBody()->write(json_encode(['error' => "Los campos $campos_faltantes" . "son requeridos"]));
-        return $response->withStatus(400);
-    }
-
-    $fecha_desde = new DateTime($data['fecha_desde']);
-
-    if ($fecha_desde <= date("Y-m-d")){
-        $connection = null;
-        $response->getBody()->write(json_encode(['error' => 'La fecha de inicio debe ser posterior a la fecha actual']));
-        return $response->withStatus(400);
-    }
-
     try {
         $connection = getConnection();
 
         $nuevo_inquilino = $connection->query("SELECT * FROM inquilinos WHERE id = " . $data['inquilino_id'])->fetch(PDO::FETCH_ASSOC);
         if (!$nuevo_inquilino['activo']){
             $connection = null;
-            $response->getBody()->write(json_encode(['error' => 'El nuevo inquilino no está activo']));
+            $response->getBody()->write(json_encode(['inquilino_id' => 'El nuevo inquilino no está activo']));
             return $response->withStatus(400);
         }
         
         $nueva_propiedad = $connection->query("SELECT * FROM propiedades WHERE id = " . $data['propiedad_id'])->fetch(PDO::FETCH_ASSOC);
         if (!$nueva_propiedad['disponible']){
             $connection = null;
-            $response->getBody()->write(json_encode(['error' => 'La nueva propiedad no está disponible']));
+            $response->getBody()->write(json_encode(['propiedad_id' => 'La nueva propiedad no está disponible']));
             return $response->withStatus(400);
         }
 
@@ -1425,29 +1437,29 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
 
         if (empty($reserva)){
             $connection = null;
-            $response->getBody()->write(json_encode(['error' => 'La reserva con el ID especificado no existe']));
+            $response->getBody()->write(json_encode(['id' => 'La reserva con el ID especificado no existe']));
             return $response->withStatus(404);
         }
 
         //Verificamos que la reserva no esté en curso
-
         if (fechaEnIntervalo(date("Y-m-d"),$reserva['fecha_desde'],$reserva['cantidad_noches'])){
             $connection = null;
-            $response->getBody()->write(json_encode(['error' => 'No se puede editar una reserva en curso']));
+            $response->getBody()->write(json_encode(['id' => 'No se puede editar una reserva en curso']));
             return $response->withStatus(400);
         } 
         
         //Verificamos que la propiedad esté disponible para la fecha solicitada
         $fecha_inicio_disponibilidad = new DateTime($nueva_propiedad['fecha_inicio_disponibilidad']);
-        
+        $fecha_desde= new DateTime($data["fecha_desde"]);
+
         if ($fecha_desde <= $fecha_inicio_disponibilidad){
-            $response->getBody()->write(json_encode(['error' => 'La propiedad no está disponible para la fecha solicitada']));
+            $response->getBody()->write(json_encode(['propiedad_id' => 'La propiedad no está disponible para la fecha solicitada']));
             return $response->withStatus(400);
         }
 
         //Editamos la reserva
-        $valor_total = $reserva['valor_noche']/$reserva['cantidad_noches']*$data['cantidad_noches'];
-        $stmt = $connection->prepare("UPDATE reservas SET propiedad_id = :propiedad_id, inquilino_id = :inquilino_id, fecha_desde = :fecha_desde, cantidad_noches = :cantidad_noches WHERE id = :id");
+        $valor_total = $nueva_propiedad["valor_noche"]*$data['cantidad_noches'];
+        $stmt = $connection->prepare("UPDATE reservas SET propiedad_id = :propiedad_id, inquilino_id = :inquilino_id, fecha_desde = :fecha_desde, cantidad_noches = :cantidad_noches, valor_total = :valor_total WHERE id = :id");
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':propiedad_id',$data['propiedad_id']);
         $stmt->bindParam(':inquilino_id',$data['inquilino_id']);
@@ -1455,7 +1467,7 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         $stmt->bindParam(':cantidad_noches',$data['cantidad_noches']);
         $stmt->bindParam(':valor_total',$valor_total);
 
-        $stmt->execute($data);
+        $stmt->execute();
 
         $connection = null;
 
