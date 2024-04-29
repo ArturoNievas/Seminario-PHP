@@ -1118,7 +1118,13 @@ $app->get("/propiedades",function(Request $request,Response $response,$args){
         $condiciones = "";
         foreach ($data as $key => $value) {
             if (isset($value) && !empty($value)){
-                $condiciones = $condiciones . " $key = $value AND";
+                if ($key == 'fecha_inicio_disponibilidad') {
+                    // Se hace la distincion de campos porque este requiere una comparación de <= y no de igualdad
+                    $fecha_inicio_disponibilidad = (new DateTime($data[$key]))->format("Y-m-d");
+                    $condiciones = $condiciones . " $key <= $fecha_inicio_disponibilidad AND";
+                } else {
+                    $condiciones = $condiciones . " $key = $value AND";
+                }
             }
         }
         if ($condiciones!=""){
@@ -1274,6 +1280,13 @@ $app->post('/reservas', function (Request $request, Response $response) {
             return $response->withStatus(400);
         }
 
+        // Verificar que la propiedad esté disponible
+        if (!$propiedad['disponible']){
+            $connection = null;
+            $response->getBody()->write(json_encode(['propiedad_id' => 'La propiedad no está disponible']));
+            return $response->withStatus(400);
+        }
+        
         // Verificar si la propiedad está disponible para ser alquilada en el período ingresado
         if (!$propiedad['disponible'] || $fecha_desde <= $fecha_inicio_disponibilidad || !propiedadDisponible($connection,$propiedad_id,$fecha_desde,$cantidad_noches)){
             $response->getBody()->write(json_encode(['propiedad_id' => 'La propiedad no está disponible para ser alquilada en el período ingresado']));
