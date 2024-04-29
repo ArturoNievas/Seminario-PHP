@@ -128,10 +128,6 @@ function seSolapan($inicio1,$fin1,$inicio2,$fin2) {
 
 //Función que verifica que la propiedad esté disponible para el intervalo de tiempo ingresado
 function propiedadDisponible($connection,$propiedad_id,$inicioIntervalo,$duracion,$reserva_id=null) {
-    $fecha_actual = new DateTime();
-    if($inicioIntervalo<$fecha_actual){
-        return false;
-    }
     // Convertir la fecha de inicio al formato deseado
     $fecha_inicio = $inicioIntervalo->format("Y-m-d");
     // Calcular la fecha final sumando la duración al inicio
@@ -1272,6 +1268,12 @@ $app->post('/reservas', function (Request $request, Response $response) {
             return $response->withStatus(400);
         }
 
+        // Verificar si la fecha de inicio es posterior al día actual
+        if ($fecha_desde <= new DateTime()){
+            $response->getBody()->write(json_encode(['fecha_desde' => 'La fecha de inicio de la reserva debe ser posterior al día de hoy']));
+            return $response->withStatus(400);
+        }
+
         // Verificar si la propiedad está disponible para ser alquilada en el período ingresado
         if (!$propiedad['disponible'] || $fecha_desde <= $fecha_inicio_disponibilidad || !propiedadDisponible($connection,$propiedad_id,$fecha_desde,$cantidad_noches)){
             $response->getBody()->write(json_encode(['propiedad_id' => 'La propiedad no está disponible para ser alquilada en el período ingresado']));
@@ -1419,6 +1421,7 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
     try {
         $connection = getConnection();
 
+        // Verificar que el inquilino esté activo
         $nuevo_inquilino = $connection->query("SELECT * FROM inquilinos WHERE id = " . $data['inquilino_id'])->fetch(PDO::FETCH_ASSOC);
         if (!$nuevo_inquilino['activo']){
             $connection = null;
@@ -1426,6 +1429,7 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
             return $response->withStatus(400);
         }
         
+        // Verificar que la propiedad esté disponible
         $nueva_propiedad = $connection->query("SELECT * FROM propiedades WHERE id = " . $data['propiedad_id'])->fetch(PDO::FETCH_ASSOC);
         if (!$nueva_propiedad['disponible']){
             $connection = null;
@@ -1433,8 +1437,8 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
             return $response->withStatus(400);
         }
 
+        // Verificar que exista la reserva
         $reserva = $connection->query("SELECT * FROM reservas WHERE id = " . $id)->fetch(PDO::FETCH_ASSOC);
-
         if (empty($reserva)){
             $connection = null;
             $response->getBody()->write(json_encode(['id' => 'La reserva con el ID especificado no existe']));
@@ -1446,13 +1450,18 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
             $connection = null;
             $response->getBody()->write(json_encode(['id' => 'No se puede editar una reserva en curso']));
             return $response->withStatus(400);
-        } 
+        }
+
+        // Verificar si la fecha de inicio es posterior al día actual
+        $fecha_desde= new DateTime($data["fecha_desde"]);
+        if ($fecha_desde <= new DateTime()){
+            $response->getBody()->write(json_encode(['fecha_desde' => 'La fecha de inicio de la reserva debe ser posterior al día de hoy']));
+            return $response->withStatus(400);
+        }
         
         //Verificamos que la propiedad esté disponible para la fecha solicitada
         $fecha_inicio_disponibilidad = new DateTime($nueva_propiedad['fecha_inicio_disponibilidad']);
-        $fecha_desde= new DateTime($data["fecha_desde"]);
-
-        if ($fecha_desde <= $fecha_inicio_disponibilidad){
+        if ($fecha_desde <= $fecha_inicio_disponibilidad || !propiedadDisponible($connection,$data['propiedad_id'],$fecha_desde,$data['cantidad_noches'],$id)){
             $response->getBody()->write(json_encode(['propiedad_id' => 'La propiedad no está disponible para la fecha solicitada']));
             return $response->withStatus(400);
         }
