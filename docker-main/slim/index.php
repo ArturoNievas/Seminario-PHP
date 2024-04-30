@@ -260,6 +260,14 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
             return $response->withStatus(400);
         }
 
+        // Verificar si existe la localidad con el id especificado
+        $stmt = $connection->query("SELECT * FROM localidades WHERE id = '$id'");
+        $dato = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$dato){
+            $response->getBody()->write(json_encode(['id' => 'La localidad con el ID especificado no existe']));
+            return $response->withStatus(404);
+        }
+
         // Actualizar la localidad en la base de datos
         $stmt = $connection->prepare("UPDATE localidades SET nombre = :nombre WHERE id = :id");
         $stmt->bindParam(':nombre', $data['nombre']);
@@ -268,8 +276,8 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
 
         // Verificar si se actualizó alguna fila
         if ($stmt->rowCount() == 0) {
-            $response->getBody()->write(json_encode(['id' => 'La localidad con el ID especificado no existe']));
-            return $response->withStatus(404);
+            $response->getBody()->write(json_encode(['message' => "No se cambió ningún dato de la localidad"]));
+            return $response->withStatus(200);
         }
 
         $connection = null; // Cerrar la conexión
@@ -365,7 +373,7 @@ $app->delete('/tipos_propiedad/{id}', function (Request $request, Response $resp
 
     // Verificar que el ID sea un número entero positivo
     if (!ctype_digit($id) || $id <= 0) {
-        $response->getBody()->write(json_encode(['error' => 'ID de tipo de propiedad no válido']));
+        $response->getBody()->write(json_encode(['id' => 'ID de tipo de propiedad no válido']));
         return $response->withStatus(400);
     }
 
@@ -406,7 +414,7 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
 
     // Verificar que el ID sea un número entero positivo
     if (!ctype_digit($id) || $id <= 0) {
-        $response->getBody()->write(json_encode(['error' => 'ID de tipo de propiedad no válido']));
+        $response->getBody()->write(json_encode(['id' => 'ID de tipo de propiedad no válido']));
         return $response->withStatus(400);
     }
 
@@ -433,8 +441,16 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
         $nombre = $data['nombre'];
         $repetidos = $connection->query("SELECT * FROM tipo_propiedades WHERE nombre = '$nombre'");
         if ($repetidos->rowCount() != 0){
-            $response->getBody()->write(json_encode(['error' => "Ya existe un tipo de propiedad con el nombre $nombre"]));
+            $response->getBody()->write(json_encode(['nombre' => "Ya existe un tipo de propiedad con el nombre $nombre"]));
             return $response->withStatus(400);
+        }
+
+        // Verificar si existe el tipo de propiedad con el id especificado
+        $stmt = $connection->query("SELECT * FROM tipos_propiedad WHERE id = '$id'");
+        $dato = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$dato){
+            $response->getBody()->write(json_encode(['id' => 'El tipo de propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
         }
 
         // Actualizar la localidad en la base de datos
@@ -445,8 +461,8 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
 
         // Verificar si se actualizó alguna fila
         if ($stmt->rowCount() == 0) {
-            $response->getBody()->write(json_encode(['id' => "El tipo de propiedad con el ID especificado no existe"]));
-            return $response->withStatus(404);
+            $response->getBody()->write(json_encode(['message' => "No se cambió ningún dato del tipo de propiedad"]));
+            return $response->withStatus(200);
         }
 
         $connection = null; // Cerrar la conexión
@@ -606,7 +622,7 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
     $id = $args['id'];
 
     if (!ctype_digit($id) || $id <= 0) {
-        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        $response->getBody()->write(json_encode(['id' => 'ID de inquilino no válido']));
         return $response->withStatus(400);
     }
 
@@ -652,6 +668,14 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
             return $response->withStatus(400);
         }
 
+        // Verificar si existe el inquilino con el id especificado
+        $stmt = $connection->query("SELECT * FROM inquilinos WHERE id = '$id'");
+        $dato = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$dato){
+            $response->getBody()->write(json_encode(['id' => 'El inquilino con el ID especificado no existe']));
+            return $response->withStatus(404);
+        }
+
         // Actualizamos los datos del inquilino en la base de datos
         $stmt = $connection->prepare("UPDATE `inquilinos` SET `apellido`=:apellido, `nombre`=:nombre, `documento`=:documento, `email`=:email, `activo`=:activo WHERE id = $id");
         $stmt->bindParam(':apellido', $data['apellido']);
@@ -661,10 +685,10 @@ $app->put('/inquilinos/{id}', function (Request $request, Response $response, $a
         $stmt->bindParam(':activo', $data['activo']);
         $stmt->execute();
 
-        // Verificamos que el inquilino con el id especificado exista
+        // Verifico si se cambió algun dato
         if ($stmt->rowCount() == 0) {
-            $response->getBody()->write(json_encode(['id' => "El inquilino con el ID especificado no existe"]));
-            return $response->withStatus(404);
+            $response->getBody()->write(json_encode(['message' => 'No se cambio ningun dato del inquilino']));
+            return $response->withStatus(200);
         }
 
         $connection = null;
@@ -710,7 +734,7 @@ $app->get("/inquilinos/{id}",function(Request $request,Response $response, $args
 
     // Verificar que el id ingresado sea válido
     if (!ctype_digit($id) || $id <= 0) {
-        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        $response->getBody()->write(json_encode(['id' => 'ID de inquilino no válido']));
         return $response->withStatus(400);
     }
 
@@ -745,7 +769,7 @@ $app->get('/inquilinos/{idInquilino}/reservas', function (Request $request, Resp
 
     // Verificar que el id ingresado sea válido
     if (!ctype_digit($id) || $id <= 0) {
-        $response->getBody()->write(json_encode(['error' => 'ID de inquilino no válido']));
+        $response->getBody()->write(json_encode(['id' => 'ID de inquilino no válido']));
         return $response->withStatus(400);
     }
 
@@ -988,30 +1012,15 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
     try {
         $connection = getConnection();
 
+        // Verificar si existe la propiedad con el id especificado
         $stmt = $connection->query("SELECT * FROM propiedades WHERE id = '$id'");
         $dato = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if(!$dato){
-            $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no existe']));
-            return $response->withStatus(404);
-        }
-
-        $parametros = "";
-        foreach ($data as $key => $value) {
-            if (isset($value) && !empty($value)){
-                $parametros .= "$key = '$value' AND ";
-            }
-        }
-        $parametros = rtrim($parametros, "AND "); // Eliminar la última coma y el espacio
-
-        $stmt = $connection->query("SELECT * FROM propiedades WHERE $parametros");
-        $dato = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($dato) {
-            $response->getBody()->write(json_encode(['error' => 'No existe dato a cambiar']));
+            $response->getBody()->write(json_encode(['id' => 'La propiedad con el ID especificado no existe']));
             return $response->withStatus(404);
         }
         
+        // Actualizar los datos en la base de datos
         $parametros = "";
         foreach ($data as $key => $value) {
             if (isset($value) && !empty($value)){
@@ -1031,14 +1040,15 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
 
         $stmt->execute();
 
+        // Verifico si se cambió algun dato
         if ($stmt->rowCount() == 0) {
-            $response->getBody()->write(json_encode(['error' => 'La propiedad con el ID especificado no existe']));
-            return $response->withStatus(404);
+            $response->getBody()->write(json_encode(['message' => 'No se cambio ningun dato de la propiedad']));
+            return $response->withStatus(200);
         }
 
         $connection = null;
 
-        $response->getBody()->write(json_encode(['message' => 'Propiedad actualizada correctamente']));
+        $response->getBody()->write(json_encode(['success' => 'Propiedad actualizada correctamente']));
         return $response->withStatus(200);
     } catch (PDOException $e) {
         $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
@@ -1124,7 +1134,7 @@ $app->get('/propiedades/{id}', function (Request $request, Response $response, $
 
     if (!ctype_digit($id) || $id <= 0) {
         //$errores['error']='ID de propiedad no válido';
-        $response->getBody()->write(json_encode(['error' => 'ID de propiedad no válido']));
+        $response->getBody()->write(json_encode(['id' => 'ID de propiedad no válido']));
         return $response->withStatus(400);
     }
 
@@ -1307,7 +1317,7 @@ $app->delete('/reservas/{id}', function (Request $request, Response $response, $
         $diferecia_hasta = $fecha_fin_reserva->diff($fecha_actual);//obtener la diferencia entre la fecha actual y la fecha de fin de la reserva
         if ($diferencia_desde->format('%R') === '+') {
             $connection = null;
-            $response->getBody()->write(json_encode(['error' => 'No se puede cancelar una reserva que pasada o en curso']));
+            $response->getBody()->write(json_encode(['id' => 'No se puede cancelar una reserva que pasada o en curso']));
             return $response->withStatus(400);
         }
 
@@ -1420,14 +1430,14 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
             return $response->withStatus(400);
         }
         
-        //Verificamos que la propiedad esté disponible para la fecha solicitada
+        // Verificamos que la propiedad esté disponible para la fecha solicitada
         $fecha_inicio_disponibilidad = new DateTime($nueva_propiedad['fecha_inicio_disponibilidad']);
         if ($fecha_desde <= $fecha_inicio_disponibilidad || !propiedadDisponible($connection,$data['propiedad_id'],$fecha_desde,$data['cantidad_noches'],$id)){
             $response->getBody()->write(json_encode(['propiedad_id' => 'La propiedad no está disponible para la fecha solicitada']));
             return $response->withStatus(400);
         }
 
-        //Editamos la reserva
+        // Editamos la reserva
         $valor_total = $nueva_propiedad["valor_noche"]*$data['cantidad_noches'];
         $stmt = $connection->prepare("UPDATE reservas SET propiedad_id = :propiedad_id, inquilino_id = :inquilino_id, fecha_desde = :fecha_desde, cantidad_noches = :cantidad_noches, valor_total = :valor_total WHERE id = :id");
         $stmt->bindParam(':id', $id);
@@ -1438,6 +1448,12 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         $stmt->bindParam(':valor_total',$valor_total);
 
         $stmt->execute();
+
+        // Verifico si se cambió algun dato
+        if ($stmt->rowCount() == 0) {
+            $response->getBody()->write(json_encode(['message' => 'No se cambio ningun dato de la reserva']));
+            return $response->withStatus(200);
+        }
 
         $connection = null;
 
