@@ -44,7 +44,7 @@ function validarRequisitos($datos, $validacion)
     $errores = [];
 
     foreach ($validacion as $campo => $reglas) {
-        $existe=isset($datos[$campo]) && (!empty($datos[$campo]) || $datos[$campo]==false);
+        $existe=isset($datos[$campo]) && (!empty($datos[$campo]) || $datos[$campo] == false || $datos[$campo] == 0);
         foreach ($reglas as $regla => $valor) {
             switch ($valor) {
                 case 'requerido':
@@ -63,7 +63,7 @@ function validarRequisitos($datos, $validacion)
                     }
                     break;
                 case 'bool':
-                    if ($existe && !is_bool($datos[$campo])) {
+                    if ($existe && !($datos[$campo] == 1 || $datos[$campo] == 0)) {
                         $errores[$campo][] = "El campo $campo debe ser un booleano válido (true o false).";
                     }
                     break;
@@ -254,7 +254,7 @@ $app->put('/localidades/{id}', function (Request $request, Response $response, $
 
         // Verificar si el nuevo nombre está repetido
         $nombre = $data['nombre'];
-        $repetidos = $connection->query("SELECT * FROM localidades WHERE nombre = '$nombre'");
+        $repetidos = $connection->query("SELECT * FROM localidades WHERE nombre = '$nombre' AND id <> '$id'");
         if ($repetidos->rowCount() != 0) {
             $response->getBody()->write(json_encode(['nombre' => "Ya existe una localidad con el nombre $nombre"]));
             return $response->withStatus(400);
@@ -439,7 +439,7 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
 
         // Verificar que el nombre no esté repetido
         $nombre = $data['nombre'];
-        $repetidos = $connection->query("SELECT * FROM tipo_propiedades WHERE nombre = '$nombre'");
+        $repetidos = $connection->query("SELECT * FROM tipo_propiedades WHERE nombre = '$nombre' AND id <> '$id'");
         if ($repetidos->rowCount() != 0){
             $response->getBody()->write(json_encode(['nombre' => "Ya existe un tipo de propiedad con el nombre $nombre"]));
             return $response->withStatus(400);
@@ -1060,48 +1060,45 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
 $app->get("/propiedades",function(Request $request,Response $response,$args){
     $data = $request->getQueryParams();
 
+    // Validamos los datos del filtro
+    $validacion = [
+        'disponible' => [
+            'bool',
+        ],
+        'localidad_id' => [
+            'int'
+        ],
+        'fecha_inicio_disponibilidad' => [
+            'fecha'
+        ],
+        'cantidad_huespedes' => [
+            'int'
+        ]
+    ];
+    $errores = validarRequisitos($data,$validacion);
+    if (!empty($errores)) {
+        $response->getBody()->write(json_encode($errores));
+        return $response->withStatus(400);
+    }
+    
     try {
         $conn = getConnection();
 
-        // Validamos los datos del filtro
-        $validacion = [
-            'disponible' => [
-                'bool',
-            ],
-            'localidad_id' => [
-                'int'
-            ],
-            'fecha_inicio_disponibilidad' => [
-                'fecha'
-            ],
-            'cantidad_huespedes' => [
-                'int'
-            ]
-        ];
-        $errores = validarRequisitos($data,$validacion);
-        if (!empty($errores)) {
-            $response->getBody()->write(json_encode($errores));
-            return $response->withStatus(400);
-        }
-
         // Armamos la consulta SQL
-        $sql = "SELECT * FROM propiedades";
-        $condiciones = "";
+        $sql = "SELECT * FROM propiedades WHERE 1 = 1";
         foreach ($data as $key => $value) {
-            if (isset($value) && !empty($value)){
+            if (isset($value) && (!empty($value) || $value == 0 || $value == false)){
                 if ($key == 'fecha_inicio_disponibilidad') {
                     // Se hace la distincion de campos porque este requiere una comparación de <= y no de igualdad
-                    $fecha_inicio_disponibilidad = (new DateTime($data[$key]))->format("Y-m-d");
-                    $condiciones = $condiciones . " $key <= $fecha_inicio_disponibilidad AND";
+                    //$fecha_inicio_disponibilidad = (new DateTime($data[$key]))->format("Y-m-d");
+                    $fecha_inicio_disponibilidad = $data[$key];
+                    $sql = $sql . " AND $key <= '$fecha_inicio_disponibilidad'";
                 } else {
-                    $condiciones = $condiciones . " $key = $value AND";
+                    $sql = $sql . " AND $key = $value";
                 }
             }
         }
-        if ($condiciones!=""){
-            $condiciones = substr($condiciones, 0, -4);
-            $sql = $sql . " WHERE" . $condiciones;
-        }
+        var_dump($sql);
         
         // Levantamos las propiedades filtradas
         $query = $conn->query($sql);
