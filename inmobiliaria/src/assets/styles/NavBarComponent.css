@@ -1,0 +1,10 @@
+nav{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index:1000;
+    width: 20vw;
+    height: 100vh;
+    margin: 0;
+    background-color: aqua;
+}

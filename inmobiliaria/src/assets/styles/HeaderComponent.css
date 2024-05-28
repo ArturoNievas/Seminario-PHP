@@ -1,0 +1,9 @@
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items: center;
+    flex-direction: row;
+    background-color: aqua;
+    padding:5px;
+    min-height: 5%;
+}
