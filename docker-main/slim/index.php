@@ -1090,7 +1090,6 @@ $app->get("/propiedades",function(Request $request,Response $response,$args){
             if (isset($value) && (!empty($value) || $value == 0 || $value == false)){
                 if ($key == 'fecha_inicio_disponibilidad') {
                     // Se hace la distincion de campos porque este requiere una comparación de <= y no de igualdad
-                    //$fecha_inicio_disponibilidad = (new DateTime($data[$key]))->format("Y-m-d");
                     $fecha_inicio_disponibilidad = $data[$key];
                     $sql = $sql . " AND $key <= '$fecha_inicio_disponibilidad'";
                 } else {
@@ -1098,7 +1097,6 @@ $app->get("/propiedades",function(Request $request,Response $response,$args){
                 }
             }
         }
-        var_dump($sql);
         
         // Levantamos las propiedades filtradas
         $query = $conn->query($sql);
