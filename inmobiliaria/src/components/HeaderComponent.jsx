@@ -1,6 +1,5 @@
 import '../assets/styles/HeaderComponent.css';
-import imagen1 from '../assets/images/png-transparent-hamburger-button-hot-dog-computer-icons-pancake-hot-dog-share-icon-navbar-menu-thumbnail.png';
-import imagen2 from '../assets/images/pngwing.com.png';
+import imgList from '../assets/images/list.svg';
 import React, { useState, useEffect } from "react";
 import NavBarComponent from './NavBarComponent';
 
@@ -15,9 +14,9 @@ function HeaderComponent() {
         <header>
             <div>
                 <button className="desplegable-container" onClick={handleClick}>
-                    <img src={imagen1} alt="..." height='20px'/>
+                    <img src={imgList} alt="..." height='20px'/>
                 </button>
-                {isOpen && <NavBarComponent />} 
+                {isOpen && <NavBarComponent value={isOpen} handleClick={handleClick}/>} 
             </div>
             <div>
                 asda
