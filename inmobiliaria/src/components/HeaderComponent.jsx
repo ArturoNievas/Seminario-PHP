@@ -1,6 +1,7 @@
 import '../assets/styles/HeaderComponent.css';
 import imgList from '../assets/images/list.svg';
-import React, { useState, useEffect } from "react";
+import logo from '../assets/images/zarla-real-viva-1x1-2400x2400-20210603-tvj4xbp97wqkbcyqj7dr.png';
+import React, { useState } from "react";
 import NavBarComponent from './NavBarComponent';
 
 function HeaderComponent() {
@@ -13,16 +14,13 @@ function HeaderComponent() {
     return (
         <header>
             <div>
-                <button className="desplegable-container" onClick={handleClick}>
-                    <img src={imgList} alt="..." height='20px'/>
-                </button>
+                <div className="desplegable-container" onClick={handleClick}>
+                    <img src={imgList} alt="button-desplegable-list-anchors" height='35px'/>
+                </div>
                 {isOpen && <NavBarComponent value={isOpen} handleClick={handleClick}/>} 
             </div>
-            <div>
-                asda
-            </div>
-            aaa
-            bbb
+            <img className="logo" src={logo} alt="logo"/>
+            <div></div>
         </header>
     );
 }

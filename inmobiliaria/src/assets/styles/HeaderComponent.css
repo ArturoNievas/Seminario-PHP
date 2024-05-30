@@ -6,4 +6,13 @@ header{
     background-color: aqua;
     padding:5px;
     min-height: 5%;
+    height: 15%;
+}
+
+.logo{
+    height: 60%;
+}
+
+.desplegable-container{
+    margin-left: 5px;
 }

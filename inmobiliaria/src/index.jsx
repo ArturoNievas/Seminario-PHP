@@ -13,7 +13,7 @@ root.render(
       <Routes>
         <Route path="" element={<App />}/>
         <Route path="/tipoPropiedad" element={<TipoPropiedadPage />}/>
-        <Route path="/reservas" element={<TipoPropiedadPage />}/>
+        <Route path="/reserva" element={<TipoPropiedadPage />}/>
         <Route path="/propiedad" element={<TipoPropiedadPage />}/>
       </Routes>
     </BrowserRouter>

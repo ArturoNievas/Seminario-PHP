@@ -3,12 +3,13 @@ import '../assets/styles/FooterComponent.css';
 function FooterComponent() {
     return (
       <footer>
-        <h1>aaa</h1>
-        <div>
-            asda
+        <h3>
+          Participantes:
+        </h3>
+        <div className='nombres'>
+          <p>Lionel Falasca</p>
+          <p>Nievas Arturo</p>
         </div>
-        aaa
-        bbb
       </footer>
     );
   }

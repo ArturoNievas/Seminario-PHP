@@ -1,26 +1,24 @@
 import React from "react";
 import imgX from '../assets/images/x.svg';
 import '../assets/styles/NavBarComponent.css';
+import { NavLink } from "react-router-dom";
 
 function NavBarComponent({value, handleClick}) {
     return (
         <>
             <nav>
-                <button className="btn-cancel" onClick={handleClick}>
-                    <img src={imgX} alt="btn-cancel" height="20px"/>
-                </button>
+                <div className="btn-cancel" onClick={handleClick}>
+                    <img src={imgX} alt="btn-cancel" height="35px"/>
+                </div>
                 <ul className="lista">
                     <li>
-                        <a href="#">Propiedades</a>
+                        <NavLink to="/propiedad">Propiedades</NavLink>
                     </li>
                     <li>
-                        <a href="#">Reservas</a>
+                        <NavLink to="/reserva">Reservas</NavLink>
                     </li>
                     <li>
-                        <a href="#">Tipo de propiedades</a>
-                    </li>
-                    <li>
-                        <a href="#">Tipo de propiedades</a>
+                        <NavLink to="/tipoPropiedad">Tipo de propiedades</NavLink>
                     </li>
                 </ul>
             </nav>

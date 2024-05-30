@@ -1,10 +1,16 @@
 import React from 'react';
+import HeaderComponent from '../../components/HeaderComponent';
+import FooterComponent from '../../components/FooterComponent';
 
 function PropiedadPage() {
   return (
-    <div className="App">
-      <h1>holaaaa</h1>
-    </div>
+    <>
+      <HeaderComponent />
+      <div className="App">
+        <h1>holaaaa</h1>
+      </div>
+      <FooterComponent />
+    </>
   );
 }
 
