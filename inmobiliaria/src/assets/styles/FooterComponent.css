@@ -1,9 +1,11 @@
+@import url('root.css');
+
 footer{
     display:flex;
     justify-content:space-between;
     align-items: center;
     flex-direction: row;
-    background-color: aqua;
+    background-color: var(--color-primary);
     height: 10%;
 }
 

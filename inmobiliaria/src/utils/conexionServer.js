@@ -1,7 +1,6 @@
 import config from "./config";
 
 function conexionServer(endpoint,setData, setError){
-    console.log("Intentando conectar a:", `${config.backendUrl}/${endpoint}`);
     fetch(`${config.backendUrl}/${endpoint}`)
         .then(response=>{
             if(!response.ok){

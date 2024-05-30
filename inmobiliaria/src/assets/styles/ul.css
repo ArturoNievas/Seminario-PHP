@@ -1,0 +1,34 @@
+.ul{
+    display: grid;
+    margin:0px;
+    padding: 0px;
+    justify-items: center;
+}
+
+/* Small */
+@media screen and (max-width: 768px) {
+    .ul {
+      grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+/* Medium */
+@media screen and (min-width: 768px) and (max-width: 992px) {
+    .ul {
+      grid-template-columns: repeat(3, 1fr); 
+    }
+}
+
+/* Large */
+@media screen and (min-width: 992px) and (max-width:1200px){
+    .ul {
+      grid-template-columns: repeat(4, 1fr); 
+    }
+}
+  
+/* Extra large */
+@media screen and (min-width:1200px){
+    .ul {
+      grid-template-columns: repeat(5, 1fr); 
+    }
+}

@@ -1,16 +1,22 @@
+@import url('root.css'); 
+
 header{
     display:flex;
     justify-content:space-between;
     align-items: center;
     flex-direction: row;
-    background-color: aqua;
+    background-color: var(--color-primary);
     padding:5px;
     min-height: 5%;
     height: 15%;
+    position: relative;
 }
 
 .logo{
     height: 60%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .desplegable-container{

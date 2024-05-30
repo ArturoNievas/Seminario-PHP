@@ -1,3 +1,5 @@
+@import url('root.css'); 
+
 nav{
     display: flex;
     flex-direction: column;
@@ -9,7 +11,7 @@ nav{
     width: 30vw;
     height: 100vh;
     margin: 0;
-    background-color: aqua;
+    background-color: var(--color-primary);
 }
 
 .btn-cancel{

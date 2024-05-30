@@ -1,0 +1,49 @@
+@import url('root.css'); 
+
+button{
+    border:2px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin: 3px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+button p{
+    margin: 7px;
+}
+
+.button-add{
+    background-color: var(--list-item-color);
+    /*color: rgba(72, 155, 72, 0.651);*/
+    color: var(--color-add);;
+    border: 1px solid var(--color-add);;
+}
+
+.button-edit{
+    background-color: var(--list-item-color);
+    /*color: blue;*/
+    color: var(--color-edit);;
+    border: 1px solid var(--color-edit);
+}
+
+.button-delete{
+    background-color: var(--list-item-color);
+    /*color: rgba(230, 35, 35, 0.575);*/
+    color: var(--color-delete);
+    border: 1px solid var(--color-delete);
+}
+
+.button-add:hover{
+    background-color: var(--color-add);
+    color: white;
+}
+
+.button-edit:hover{
+    background-color: var(--color-edit);
+    color: white;
+}
+
+.button-delete:hover{
+    background-color: var(--color-delete);
+    color: white;
+}

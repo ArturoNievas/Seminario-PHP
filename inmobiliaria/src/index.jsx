@@ -11,7 +11,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="" element={<App />}/>
+        <Route path="" element={<TipoPropiedadPage />}/>
         <Route path="/tipoPropiedad" element={<TipoPropiedadPage />}/>
         <Route path="/reserva" element={<TipoPropiedadPage />}/>
         <Route path="/propiedad" element={<TipoPropiedadPage />}/>
