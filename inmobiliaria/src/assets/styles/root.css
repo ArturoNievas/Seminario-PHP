@@ -1,6 +1,7 @@
 :root{
-    --color-primary: rgb(153, 216, 216);
-    --list-item-color:  rgb(176, 184, 184);
+    --color-primary: #734B34;
+    --color-secundary: #402422;
+    --main-color: #BF9D8A;
     --color-add: green;
     --color-edit: blue;
     --color-delete: red;

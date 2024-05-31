@@ -1,3 +1,5 @@
+@import url(root.css);
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -15,4 +17,11 @@ code {
   display:flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+main{
+  background-color: var(--main-color);
+  margin: 0px;
+  padding: 0px;
+  flex: 1;
 }

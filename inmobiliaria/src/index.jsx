@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './assets/styles/index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import TipoPropiedadPage from './pages/tipoPropiedad/TipoPropiedadPage';
+import NewTipoPropiedad from './pages/tipoPropiedad/NewTipoPropiedad';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,7 +13,10 @@ root.render(
       <Routes>
         <Route path="" element={<TipoPropiedadPage />}/>
         <Route path="/tipoPropiedad" element={<TipoPropiedadPage />}/>
-        <Route path="/reserva" element={<TipoPropiedadPage />}/>
+        
+        {/*este endpoint es de prueba porq no me andaba bien*/}
+        <Route path="/reserva" element={<NewTipoPropiedad />}/>
+        
         <Route path="/propiedad" element={<TipoPropiedadPage />}/>
       </Routes>
     </BrowserRouter>

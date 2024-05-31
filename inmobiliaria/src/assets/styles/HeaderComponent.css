@@ -17,6 +17,7 @@ header{
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    filter: brightness(0) saturate(0);
 }
 
 .desplegable-container{

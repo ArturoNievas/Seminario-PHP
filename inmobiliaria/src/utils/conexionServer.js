@@ -1,7 +1,19 @@
 import config from "./config";
 
-function conexionServer(endpoint,setData, setError){
-    fetch(`${config.backendUrl}/${endpoint}`)
+function conexionServer(endpoint,setData, setError, method = "GET", newData={}){
+    // Convertir FormData a un objeto JSON
+    /*const jsonData = {};
+    newData.forEach((value, key) => {
+        jsonData[key] = value;
+    });*/
+    
+    fetch(`${config.backendUrl}/${endpoint}`,{
+        method: method,
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        body: method !== "GET" ? JSON.stringify(newData) : null,
+    })
         .then(response=>{
             if(!response.ok){
                 throw new Error("error al conectarse a la base de datos");
