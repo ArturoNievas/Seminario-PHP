@@ -8,7 +8,7 @@ import UlComponent from '../../components/UlComponent';
 
 function TipoPropiedadPage() {
   const [data,setData] = useState([]);
-  const [error, setError] = useState(null);
+  const [state, setState] = useState("LOADING");
 
   const childrenItem = ((propiedad)=>(
     <ListItemComponent key={propiedad.id}>
@@ -21,17 +21,18 @@ function TipoPropiedadPage() {
   ));
 
   useEffect(() => {
-    conexionServer("tipos_propiedad",setData, setError);
+    conexionServer("tipos_propiedad",setData, setState);
   },[]);
   
   return (
     <>
       <HeaderComponent />
       <main>
-        {error ? (
-          <p>Error: {error.message}</p>
+        {state==="ERROR" ? (
+          //manejo del error.
+          <p>Error:</p>
         ) : (
-          <UlComponent data={data} childrenItem={childrenItem} />
+          <UlComponent data={data} state={state} childrenItem={childrenItem} />
         )}
       </main>
       <FooterComponent />

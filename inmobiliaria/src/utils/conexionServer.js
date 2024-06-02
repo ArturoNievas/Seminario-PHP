@@ -1,12 +1,11 @@
 import config from "./config";
 
-function conexionServer(endpoint,setData, setError, method = "GET", newData={}){
+function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
     // Convertir FormData a un objeto JSON
     /*const jsonData = {};
     newData.forEach((value, key) => {
         jsonData[key] = value;
     });*/
-    
     fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{
@@ -23,12 +22,13 @@ function conexionServer(endpoint,setData, setError, method = "GET", newData={}){
         .then(dataJson=>{
             if(dataJson.status=='success'){
                 setData(dataJson.data);
+                setState("SUCCESS");
             }else{
                 throw new Error("error al hacer el fetch de los datos");
             }
         })
         .catch(error=>{
-            setError(error);
+            setState("Error");
             console.log("error: ",error);
         })
 }

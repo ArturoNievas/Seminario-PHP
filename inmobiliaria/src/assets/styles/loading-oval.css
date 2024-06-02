@@ -1,0 +1,14 @@
+@import 'root.css';
+
+.loading-oval-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-oval {
+    width: 80px;
+    height: 80px;
+}

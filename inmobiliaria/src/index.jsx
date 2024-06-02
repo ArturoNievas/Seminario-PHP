@@ -2,24 +2,33 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './assets/styles/index.css';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider  } from 'react-router-dom';
 import TipoPropiedadPage from './pages/tipoPropiedad/TipoPropiedadPage';
 import NewTipoPropiedad from './pages/tipoPropiedad/NewTipoPropiedad';
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <TipoPropiedadPage />,
+  },
+  {
+    path: "/tipoPropiedad",
+    element: <TipoPropiedadPage />,
+  },
+  {
+    path: "/reserva",
+    element: <NewTipoPropiedad />,
+  },
+  {
+    path: "/propiedad",
+    element: <TipoPropiedadPage />,
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="" element={<TipoPropiedadPage />}/>
-        <Route path="/tipoPropiedad" element={<TipoPropiedadPage />}/>
-        
-        {/*este endpoint es de prueba porq no me andaba bien*/}
-        <Route path="/reserva" element={<NewTipoPropiedad />}/>
-        
-        <Route path="/propiedad" element={<TipoPropiedadPage />}/>
-      </Routes>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

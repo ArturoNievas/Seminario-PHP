@@ -6,41 +6,39 @@ import conexionServer from "../../utils/conexionServer";
 
 //no se como hacer esto :(
 function NewTipoPropiedad(){
-    const navigate = useNavigate;
+    const navigate = useNavigate();
     const [data,setData]=useState({});
     const [error,setError]=useState(null);
 
     //mandamos los datos el servidor
-    function sendData(formData){
+    async function sendData(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
 
-        //validar que el servidos nos retorno el status code 200 o el que sea
-        //y nos pide mostrar una alert
-        return new Promise((resolve, reject) => {
-            
-            conexionServer("tipos_propiedad",setData,setError,"POST",formData);
-            
-            if(error=null){
-                // Mostramos la alerta
+        console.log(formData.get("nombre"));
+        navigate("/");
+        /*
+        try{
+            await conexionServer("tipos_propiedad",setData,setError,"POST",formData); 
+            if(!error){
                 alert('Ingreso de datos exitoso.');
             
-                // Configuramos un temporizador para esperar 5 segundos
+                //no hace falta esperar pero lo puse para ver el mensaje.
                 setTimeout(() => {
                     console.log(data.status);
-                    // Después de 5 segundos, resolvemos la promesa
-                    resolve();
-                }, 5000); // 5000 milisegundos = 5 segundos
+                    
+                    //modificar esto a conveniencia.
+                    navigate("/");
+                }, 5000);
             }else{
-                reject(error)
-            }
-        });
+                throw new Error(error);
+            }    
+        }catch (err){
+            console.error("Error:", err);
+            alert("Error en el envío de datos");
+        }
+        */
     }
-    
-    // Esto se ejecutará después de que la alerta haya sido mostrada y hayan pasado 5 segundos
-    //modificar url si es necesario
-    sendData().then(() => {
-        //useNavigate here
-        navigate("/");
-    });
 
     return(
         <>
