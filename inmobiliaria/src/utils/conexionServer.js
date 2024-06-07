@@ -30,6 +30,7 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
         .catch(error=>{
             setState("Error");
             console.log("error: ",error);
+            throw new Error(error);
         })
 }
 

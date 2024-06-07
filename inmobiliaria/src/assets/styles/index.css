@@ -5,6 +5,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height:100vh;
+  background: var(--main-color);
 }
 
 code {
@@ -19,9 +20,31 @@ code {
   justify-content: space-between;
 }
 
-main{
+/*main{
   background-color: var(--main-color);
   margin: 0px;
   padding: 0px;
   flex: 1;
+}*/
+
+
+/* Medium */
+@media screen and (min-width: 768px) and (max-width: 950px) {
+  main{
+    min-height: 1080px;
+  }
+}
+
+/* Large */
+@media screen and (min-width: 950px) and (max-width:1200px){
+  main{
+    min-height: 1200px;
+  }
+}
+
+/* Extra large */
+@media screen and (min-width:1200px){
+  main{
+    min-height: 1000px;
+  }
 }

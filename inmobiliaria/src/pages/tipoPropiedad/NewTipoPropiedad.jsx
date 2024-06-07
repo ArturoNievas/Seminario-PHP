@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import HeaderComponent from "../../components/HeaderComponent";
 import FooterComponent from "../../components/FooterComponent";
 import { Form, useNavigate } from "react-router-dom";
+import validarCampos from "../../utils/validarCampos";
 import conexionServer from "../../utils/conexionServer";
 
 //no se como hacer esto :(
@@ -11,34 +12,40 @@ function NewTipoPropiedad(){
     const [error,setError]=useState(null);
 
     //mandamos los datos el servidor
-    async function sendData(event){
-        event.preventDefault();
-        const formData = new FormData(event.target);
+   // Modifica esta sección en el frontend
+async function sendData(event){
+    event.preventDefault();
+    const formData = new FormData(event.target);
 
-        console.log(formData.get("nombre"));
-        navigate("/");
-        /*
-        try{
-            await conexionServer("tipos_propiedad",setData,setError,"POST",formData); 
-            if(!error){
-                alert('Ingreso de datos exitoso.');
-            
-                //no hace falta esperar pero lo puse para ver el mensaje.
-                setTimeout(() => {
-                    console.log(data.status);
-                    
-                    //modificar esto a conveniencia.
-                    navigate("/");
-                }, 5000);
-            }else{
-                throw new Error(error);
-            }    
-        }catch (err){
-            console.error("Error:", err);
-            alert("Error en el envío de datos");
-        }
-        */
+    let datos = {};
+    formData.forEach((value, key) => {
+        datos[key] = value;
+    });
+
+    let validaciones = { 
+        'nombre': {
+            'requerido': true,
+            'longitud': 50
+        } 
+    };
+
+    try {
+        validarCampos(datos, validaciones);
+        console.log(datos);
+
+        await conexionServer("tipos_propiedad", setData, setError, "POST", datos);
+        
+        alert('Ingreso de datos exitoso.');
+        
+        setTimeout(() => {
+           navigate("/");
+        }, 5000);
+        
+    } catch (error) {
+        console.log(error);
     }
+}
+
 
     return(
         <>

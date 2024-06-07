@@ -10,6 +10,10 @@ function TipoPropiedadPage() {
   const [data,setData] = useState([]);
   const [state, setState] = useState("LOADING");
 
+  useEffect(() => {
+    conexionServer("tipos_propiedad",setData, setState);
+  },[]);
+
   const childrenItem = ((propiedad)=>(
     <ListItemComponent key={propiedad.id}>
       <p className='title-li'>{propiedad.nombre}</p>
@@ -19,10 +23,6 @@ function TipoPropiedadPage() {
       </div>
     </ListItemComponent>
   ));
-
-  useEffect(() => {
-    conexionServer("tipos_propiedad",setData, setState);
-  },[]);
   
   return (
     <>
