@@ -1,6 +1,6 @@
 import config from "./config";
 
-function conexionServer(endpoint,setData=null, setState=null, method = "GET", newData={}){
+function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
     fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{
@@ -15,10 +15,8 @@ function conexionServer(endpoint,setData=null, setState=null, method = "GET", ne
             return response.json();
         })
         .then(dataJson=>{
-            if(setData && setState){
-                setData(dataJson.data);
-                setState("SUCCESS");
-            }
+            setData(dataJson.data);
+            setState("SUCCESS");
         })
         .catch(error=>{
             setState("Error");

@@ -1,68 +1,62 @@
-import React, { useState } from "react";
-import { useLocation } from 'react-router-dom';
-import HeaderComponent from "../../components/HeaderComponent";
-import FooterComponent from "../../components/FooterComponent";
-import ButtonComponent from "../../components/ButtonComponent";
-import conexionServer from "../../utils/conexionServer";
-import validarCampos from "../../utils/validarCampos";
+import React, { useState } from 'react';
+import { useNavigate,useLocation } from 'react-router-dom';
+import validarCampos from '../../utils/validarCampos';
+import conexionServer from '../../utils/conexionServer';
+import HeaderComponent from '../../components/HeaderComponent';
+import FooterComponent from '../../components/FooterComponent';
 
-function EditTipoPropiedad(){
+function EditTipoPropiedad() {
+    const [nombre, setNombre] = useState('');
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
     const location = useLocation();
-    const [ data, setData ]=useState(null);
-    const [ error, setError ]=useState(null);
     const datosUrl = location.state;
 
     if (!datosUrl) {
         return <p>No hay datos disponibles.</p>;
     }
 
-    async function handleSubmit(event){
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        const formData = new FormData(event.target);
+        const datos = { nombre };
 
-        let datos = {};
-        formData.forEach((value, key) => {
-            datos[key] = value;
-        });
-
-        console.log(datos);
-    
-        let validaciones = { 
+        let validaciones = {
             'nombre': {
                 'requerido': true,
                 'longitud': 50
-            } 
+            }
         };
-    
+
         try {
             validarCampos(datos, validaciones);
-            console.log(datos);
-    
-            await conexionServer(`tipos_propiedad/${datosUrl.id}`, setData, setError, "PUT", datos);
+            await conexionServer(`tipos_propiedad/${datosUrl.id}`, setNombre, setError, 'PUT', datos);
+            alert('Tipo de propiedad actualizado exitosamente.');
             
-            setTimeout(() => {
-                alert('edicion de datos exitoso.');    
-            }, 5000);
-            
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            setError(err.message);
         }
-    }
-  
+    };
+
     return (
-      <>
-        <HeaderComponent/>
-        <main>
-            <form onSubmit={handleSubmit}>
-                <h4>Editar Tipo Propiedad</h4>
-                <input type="text" name="nombre" id="nombre" defaultValue={datosUrl.nombre}/>
-                <ButtonComponent type="edit"/>
-            </form>
-        </main>
-        <FooterComponent/>
-      </>
+        <>
+            <HeaderComponent />
+            <div>
+                <h4>Editar Tipo de Propiedad</h4>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        name="nombre"
+                        defaultValue={datosUrl.nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        placeholder="Ingresar nombre"
+                    />
+                    <button type="submit">Enviar</button>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                </form>
+            </div>
+            <FooterComponent />
+        </>
     );
 }
-
 
 export default EditTipoPropiedad;
