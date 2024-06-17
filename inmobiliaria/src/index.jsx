@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider  } from 'react-router-dom';
 import TipoPropiedadPage from './pages/tipoPropiedad/TipoPropiedadPage';
 import NewTipoPropiedad from './pages/tipoPropiedad/NewTipoPropiedad';
+import EditTipoPropiedad from './pages/tipoPropiedad/EditTipoPropiedad';
 
 const router = createBrowserRouter([
   {
@@ -12,16 +13,12 @@ const router = createBrowserRouter([
     element: <TipoPropiedadPage />,
   },
   {
-    path: "/tipoPropiedad",
-    element: <TipoPropiedadPage />,
-  },
-  {
-    path: "/reserva",
+    path: "/tipos_propiedad/create",
     element: <NewTipoPropiedad />,
   },
   {
-    path: "/propiedad",
-    element: <TipoPropiedadPage />,
+    path: "/tipos_propiedad/edit/:id",
+    element: <EditTipoPropiedad />,
   },
 ]);
 

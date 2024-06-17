@@ -27,24 +27,25 @@ code {
   flex: 1;
 }*/
 
-
-/* Medium */
+/*
+/* Medium 
 @media screen and (min-width: 768px) and (max-width: 950px) {
   main{
     min-height: 1080px;
   }
 }
 
-/* Large */
+/* Large 
 @media screen and (min-width: 950px) and (max-width:1200px){
   main{
     min-height: 1200px;
   }
 }
 
-/* Extra large */
+/* Extra large
 @media screen and (min-width:1200px){
   main{
     min-height: 1000px;
   }
 }
+*/

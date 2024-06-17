@@ -470,6 +470,7 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
         $response->getBody()->write(json_encode(['success' => "Tipo de propiedad actualizada correctamente"]));
         return $response->withStatus(200);
     } catch (PDOException $e) {
+        error_log($e->getMessage());
         $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
         return $response->withStatus(500);
     }

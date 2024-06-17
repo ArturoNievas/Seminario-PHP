@@ -3,7 +3,7 @@
 .list-item{
     list-style-type: none;
     background-color: var(--main-color);
-    min-height: 200px;
+    min-height: 300px;
     width: fit-content;
     min-width: 150px;
     display: flex;

@@ -1,0 +1,12 @@
+.buttons{
+    weight:80%;
+    margin: 0 auto;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons button{
+    flex:1;
+}
