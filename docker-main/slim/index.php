@@ -317,6 +317,51 @@ $app->get("/localidades",function(Request $request,Response $response,$args){
     }
 });
 
+//VER_LOCALIDAD
+$app->get('/localidades/{id}', function (Request $request, Response $response, $args) {
+    $id = $args['id'];
+
+    if (!ctype_digit($id) || $id <= 0) {
+        $response->getBody()->write(json_encode(['id' => 'ID de localidad no válido']));
+        return $response->withStatus(400);
+    }
+
+    try {
+        $connection = getConnection();
+        $stmt = $connection->prepare("SELECT * FROM localidades WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        //Verifico si la localidad existe
+        if ($stmt->rowCount() == 0) {
+            $response->getBody()->write(json_encode(['id' => 'La localidad con el ID especificado no existe']));
+            return $response->withStatus(404);
+        }
+        
+        $localidad = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $connection = null;
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $localidad
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 500,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');;
+    }
+});
+
 
 //------------------------------------------------------------------//
 //------------------------TIPOS DE PROPIEDAD------------------------//
@@ -499,6 +544,51 @@ $app->get("/tipos_propiedad",function(Request $request,Response $response, $args
 
         $response->getBody()->write(json_encode($payload));
         return $response->withHeader('Content-Type','application/json');
+    }
+});
+
+//VER_TIPO_PROPIEDAD
+$app->get('/tipos_propiedad/{id}', function (Request $request, Response $response, $args) {
+    $id = $args['id'];
+
+    if (!ctype_digit($id) || $id <= 0) {
+        $response->getBody()->write(json_encode(['id' => 'ID de tipo de propiedad no válido']));
+        return $response->withStatus(400);
+    }
+
+    try {
+        $connection = getConnection();
+        $stmt = $connection->prepare("SELECT * FROM tipo_propiedades WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        //Verifico si el tipo de propiedad existe
+        if ($stmt->rowCount() == 0) {
+            $response->getBody()->write(json_encode(['id' => 'El tipo de propiedad con el ID especificado no existe']));
+            return $response->withStatus(404);
+        }
+        
+        $tipo_propiedad = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $connection = null;
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $tipo_propiedad
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 500,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');;
     }
 });
 
@@ -1484,6 +1574,51 @@ $app->get("/reservas",function(Request $request,Response $response,$args){
 
         $response->getBody()->write(json_encode($payload));
         return $response->withHeader('Content-Type','application/json');
+    }
+});
+
+//VER_RESERVA
+$app->get('/reservas/{id}', function (Request $request, Response $response, $args) {
+    $id = $args['id'];
+
+    if (!ctype_digit($id) || $id <= 0) {
+        $response->getBody()->write(json_encode(['id' => 'ID de reserva no válido']));
+        return $response->withStatus(400);
+    }
+
+    try {
+        $connection = getConnection();
+        $stmt = $connection->prepare("SELECT * FROM reservas WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        //Verifico si el tipo de propiedad existe
+        if ($stmt->rowCount() == 0) {
+            $response->getBody()->write(json_encode(['id' => 'La reserva con el ID especificado no existe']));
+            return $response->withStatus(404);
+        }
+        
+        $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $connection = null;
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $reserva
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
+    } catch (PDOException $e) {
+        $payload = [
+            "status" => "error",
+            "code" => 500,
+            "data" => $e->getMessage()
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');;
     }
 });
 
