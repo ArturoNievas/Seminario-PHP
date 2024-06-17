@@ -8,7 +8,7 @@ function ListItemComponent({ propiedad, url, tipo, children }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     
-    navigate(url,{ state: { ...propiedad } });
+    navigate(url,{ state: { propiedad } });
   };
 
   return (
