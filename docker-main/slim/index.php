@@ -491,7 +491,7 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
         }
 
         // Verificar si existe el tipo de propiedad con el id especificado
-        $stmt = $connection->query("SELECT * FROM tipos_propiedad WHERE id = '$id'");
+        $stmt = $connection->query("SELECT * FROM tipo_propiedades WHERE id = '$id'");
         $dato = $stmt->fetch(PDO::FETCH_ASSOC);
         if(!$dato){
             $response->getBody()->write(json_encode(['id' => 'El tipo de propiedad con el ID especificado no existe']));
