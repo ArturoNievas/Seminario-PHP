@@ -19,10 +19,9 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
             setState("SUCCESS");
         })
         .catch(error=>{
-            setState("Error");
+            setState(error);
             console.log("error: ",error);
-            throw new Error(error);
         })
 }
 
-export default conexionServer;
+export default conexionServer;v
