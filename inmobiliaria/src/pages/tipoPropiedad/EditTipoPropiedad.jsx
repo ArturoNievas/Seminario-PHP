@@ -13,6 +13,7 @@ function EditTipoPropiedad() {
     let { id } = useParams();
     const [data, setData] = useState(null);
     const [state, setState] = useState("Loading");
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate=useNavigate();
 
     useEffect(()=>{
@@ -32,12 +33,16 @@ function EditTipoPropiedad() {
         };
 
         try {
+            console.log('entre');
             validarCampos(datos,validaciones);
+            console.log('sali');
             conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre});
             alert('Tipo de propiedad actualizado exitosamente.');
             navigate("/");
         } catch (err) {
-            setState(err.message);
+            setState("ERROR");
+            const errorObject = JSON.parse(err.message);
+            setErrorMessage(errorObject);
         }
     };
 
@@ -56,7 +61,7 @@ function EditTipoPropiedad() {
                 </div>
             ):(
                 <main className="main-edit">
-                    <h4>Editar Tipo de Propiedad</h4>
+                    <h3>Editar Tipo de Propiedad</h3>
                     <form onSubmit={handleSubmit}>
                         <input
                             type="text"
@@ -66,8 +71,8 @@ function EditTipoPropiedad() {
                             placeholder="Ingresar nombre"
                         />
                         <button type="submit">Enviar</button>
-                        {state === "ERROR" && <p style={{ color: 'red' }}>{state}</p>}
                     </form>
+                    {state === "ERROR" && <p style={{ color: 'red' }}>{`${state}: ${errorMessage.nombre}`}</p>}
                 </main>
             )}
             <FooterComponent />
