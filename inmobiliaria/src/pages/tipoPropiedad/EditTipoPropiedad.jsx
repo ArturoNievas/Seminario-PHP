@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
-import { useNavigate,useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate,useLocation, useParams } from 'react-router-dom';
 import validarCampos from '../../utils/validarCampos';
 import conexionServer from '../../utils/conexionServer';
 import HeaderComponent from '../../components/HeaderComponent';
 import FooterComponent from '../../components/FooterComponent';
 
 function EditTipoPropiedad() {
-    const [nombre, setNombre] = useState('');
-    const [error, setError] = useState(null);
+    let { id } = useParams();
+    const [data, setData] = useState(null);
+    const [state, setState] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const datosUrl = location.state;
 
-    if (!datosUrl) {
+    useEffect(()=>{
+        conexionServer(`tipos_propiedad/${id}`, setData, setState);
+    },[]);
+
+    if (!data) {
         return <p>No hay datos disponibles.</p>;
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const datos = { nombre };
+
+        console.log(data);
 
         let validaciones = {
             'nombre': {
@@ -28,12 +33,17 @@ function EditTipoPropiedad() {
         };
 
         try {
-            validarCampos(datos, validaciones);
-            await conexionServer(`tipos_propiedad/${datosUrl.id}`, setNombre, setError, 'PUT', datos);
+            if (data == null || data ==""){
+                throw new Error('nombre es requerido');
+            } else if ( data > 50) {
+                throw new Error('nombre debe tener a lo sumo 50 caracteres');
+            }
+            conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: data});
             alert('Tipo de propiedad actualizado exitosamente.');
-            
+            navigate(`/`);
         } catch (err) {
-            setError(err.message);
+            console.log(err);
+            setState(err.message);
         }
     };
 
@@ -46,12 +56,12 @@ function EditTipoPropiedad() {
                     <input
                         type="text"
                         name="nombre"
-                        defaultValue={datosUrl.nombre}
-                        onChange={(e) => setNombre(e.target.value)}
+                        defaultValue={data.nombre}
+                        onChange={(e) => setData(e.target.value)}
                         placeholder="Ingresar nombre"
                     />
                     <button type="submit">Enviar</button>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {state == "ERROR" && <p style={{ color: 'red' }}>{state}</p>}
                 </form>
             </div>
             <FooterComponent />
