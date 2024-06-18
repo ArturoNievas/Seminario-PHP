@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate,useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import validarCampos from '../../utils/validarCampos';
 import conexionServer from '../../utils/conexionServer';
 import HeaderComponent from '../../components/HeaderComponent';
 import FooterComponent from '../../components/FooterComponent';
+import { Oval } from "react-loader-spinner";
+import '../../assets/styles/root.css';
+import '../../assets/styles/loading-oval.css';
+import '../../assets/styles/editStyle.css';
 
 function EditTipoPropiedad() {
     let { id } = useParams();
     const [data, setData] = useState(null);
-    const [state, setState] = useState(null);
-    const navigate = useNavigate();
-    const location = useLocation();
+    const [state, setState] = useState("Loading");
+    const navigate=useNavigate();
 
     useEffect(()=>{
         conexionServer(`tipos_propiedad/${id}`, setData, setState);
     },[]);
 
-    if (!data) {
-        return <p>No hay datos disponibles.</p>;
-    }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        console.log(data);
+        let nombre=event.target.nombre.value;
+        const datos={"nombre":nombre};
 
         let validaciones = {
             'nombre': {
@@ -33,16 +32,11 @@ function EditTipoPropiedad() {
         };
 
         try {
-            if (data == null || data ==""){
-                throw new Error('nombre es requerido');
-            } else if ( data > 50) {
-                throw new Error('nombre debe tener a lo sumo 50 caracteres');
-            }
-            conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: data});
+            validarCampos(datos,validaciones);
+            conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre});
             alert('Tipo de propiedad actualizado exitosamente.');
-            navigate(`/`);
+            navigate("/");
         } catch (err) {
-            console.log(err);
             setState(err.message);
         }
     };
@@ -50,20 +44,32 @@ function EditTipoPropiedad() {
     return (
         <>
             <HeaderComponent />
-            <div>
-                <h4>Editar Tipo de Propiedad</h4>
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="nombre"
-                        defaultValue={data.nombre}
-                        onChange={(e) => setData(e.target.value)}
-                        placeholder="Ingresar nombre"
+            {state==="Loading"?(
+                <div className="loading-oval-container">
+                    <Oval
+                        className="loading-oval"
+                        visible={true}
+                        color="var(--color-oval)"
+                        secondaryColor="var(--color-oval)"
+                        ariaLabel="oval-loading"
                     />
-                    <button type="submit">Enviar</button>
-                    {state == "ERROR" && <p style={{ color: 'red' }}>{state}</p>}
-                </form>
-            </div>
+                </div>
+            ):(
+                <main className="main-edit">
+                    <h4>Editar Tipo de Propiedad</h4>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            name="nombre"
+                            id="nombre"
+                            defaultValue={data ? data.nombre : ''}
+                            placeholder="Ingresar nombre"
+                        />
+                        <button type="submit">Enviar</button>
+                        {state === "ERROR" && <p style={{ color: 'red' }}>{state}</p>}
+                    </form>
+                </main>
+            )}
             <FooterComponent />
         </>
     );

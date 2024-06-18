@@ -24,4 +24,4 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
         })
 }
 
-export default conexionServer;v
+export default conexionServer;

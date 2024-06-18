@@ -1,6 +1,6 @@
 import '../assets/styles/Button.css';
 
-function ButtonComponent({ type , handleClick }){
+function ButtonComponent({ type , handleClick, params }){
     const buttonText = {
         delete: "Eliminar",
         edit: "Editar",
@@ -8,7 +8,7 @@ function ButtonComponent({ type , handleClick }){
     }
 
     return(
-        <button className={'button-' + type} type="submit" onClick={handleClick}>
+        <button className={'button-' + type} type="submit" onClick={(event)=>handleClick(event, params)}>
             <p>{buttonText[type]}</p>
         </button>
     );
