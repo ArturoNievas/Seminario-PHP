@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider  } from 'react-router-dom';
 import TipoPropiedadPage from './pages/tipoPropiedad/TipoPropiedadPage';
 import NewTipoPropiedad from './pages/tipoPropiedad/NewTipoPropiedad';
 import EditTipoPropiedad from './pages/tipoPropiedad/EditTipoPropiedad';
+import PropiedadPage from './pages/propiedad/PropiedadPage';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: "/tipos_propiedad/edit/:id",
     element: <EditTipoPropiedad />,
+  },
+  {
+    path: "/propiedad",
+    element: <PropiedadPage />,
   },
 ]);
 

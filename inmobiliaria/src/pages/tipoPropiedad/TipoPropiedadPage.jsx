@@ -6,7 +6,6 @@ import conexionServer from '../../utils/conexionServer';
 import ListItemComponent from '../../components/ListitemComponent';
 import ButtonComponent from '../../components/ButtonComponent';
 import UlComponent from '../../components/UlComponent';
-import CreateElement from '../../components/CreacionDeElemento/CrearElemento';
 import { Oval } from "react-loader-spinner";
 
 function TipoPropiedadPage() {
@@ -22,6 +21,11 @@ function TipoPropiedadPage() {
     
   },[]);
 
+  function handleClickCreate(event, url) {
+    event.preventDefault();
+    navigate(url);
+  };
+
   function handleClickEdit(event, url) {
     event.preventDefault();
     navigate(url);
@@ -36,9 +40,8 @@ function TipoPropiedadPage() {
   */
   function handleClickDelete(event, id ) {
     event.preventDefault();
-    <>
-     <p>Seguro que quiere eliminar la propiedad {id}?</p>
-    </>
+    //hay que ver como enviar un alert, algo que funcione como condicional
+    //Se debe pedir confirmación antes de realizar la acción.
 
     conexionServer(`tipos_propiedad/${id}`, setData, setState, "DELETE");
     alert("propiedad eliminada");
@@ -58,25 +61,10 @@ function TipoPropiedadPage() {
     <>
       <HeaderComponent />
       <main>
-        {/*
-          moví el manejo de los estados para aca porque el createElement
-          se renderizaba por mas de que el estado sea loading,
-          hay que fijarse como modularizarlo para reutilizarlo.
-          y como manejar cuando el stado de error 
-        */}
         {state==="SUCCESS" ? (
-          <div>
+          <div className="div-main">
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
-
-            {/* 
-              hay que fijarse como hacer bien este apartado
-              yo,lo hice como para que ande solamente 
-
-              aparte hay que fixeear este error:
-              CrearElemento.jsx:21 Warning: Each child in a list should have a unique "key" prop.
-              nose porq lo tira si no esta dentro de una lista
-            */}
-            <CreateElement params={['nombre']} endpoint={`tipos_propiedad`} setDatosPadre={setData} setState={setState}/>
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/tipos_propiedad/create`}/>
           </div>
         ) : state==="LOADING" ? (
           <div className="loading-oval-container">

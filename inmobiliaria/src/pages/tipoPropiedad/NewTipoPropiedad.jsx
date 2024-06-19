@@ -1,64 +1,61 @@
 import React, { useState } from "react";
-import HeaderComponent from "../../components/HeaderComponent";
-import FooterComponent from "../../components/FooterComponent";
-import { Form, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import validarCampos from "../../utils/validarCampos";
 import conexionServer from "../../utils/conexionServer";
+import FormChangeDatos from "../../components/FormChangeDatos";
 
-//no se como hacer esto :(
+//hay variables que sobran me parece
 function NewTipoPropiedad(){
     const navigate = useNavigate();
     const [data,setData]=useState({});
-    const [error,setError]=useState(null);
+    const [state,setState]=useState("LOADING");
+    const [errorMessage, setErrorMessage] = useState("");
 
-    //mandamos los datos el servidor
-   // Modifica esta sección en el frontend
-async function sendData(event){
-    event.preventDefault();
-    const formData = new FormData(event.target);
+    async function sendData(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
 
-    let datos = {};
-    formData.forEach((value, key) => {
-        datos[key] = value;
-    });
+        let datos = {};
+        formData.forEach((value, key) => {
+            datos[key] = value;
+        });
 
-    let validaciones = { 
-        'nombre': {
-            'requerido': true,
-            'longitud': 50
-        } 
-    };
+        let validaciones = { 
+            'nombre': {
+                'requerido': true,
+                'longitud': 50
+            } 
+        };
 
-    try {
-        validarCampos(datos, validaciones);
-        console.log(datos);
+        try {
+            validarCampos(datos, validaciones);
+            console.log(datos);
 
-        await conexionServer("tipos_propiedad", setData, setError, "POST", datos);
-        
-        alert('Ingreso de datos exitoso.');
-        
-        setTimeout(() => {
-           navigate("/");
-        }, 5000);
-        
-    } catch (error) {
-        console.log(error);
+            await conexionServer("tipos_propiedad", setData, setState, "POST", datos);
+            
+            alert('Ingreso de datos exitoso.');
+            
+            setTimeout(() => {
+                navigate("/");
+            }, 5000);
+            
+        } catch (err) {
+            setState("ERROR");
+            const errorObject = JSON.parse(err.message);
+            setErrorMessage(errorObject);
+        }
     }
-}
 
 
     return(
         <>
-            <HeaderComponent />
-            <main>
-                <Form onSubmit={sendData}>
-                    <input type="text" name="nombre" id="nombre" placeholder="Ingresar nombre"/>
-                    <button type="submit">
-                        <p>Enviar</p>
-                    </button>
-                </Form>
-            </main>
-            <FooterComponent />
+            <FormChangeDatos 
+                titulo="Agregar un nuevo Tipo de Propiedad" 
+                handleSubmit={sendData} 
+                params={["nombre"]}
+                state={state}
+                errorMessage={errorMessage}
+            />
         </>
     );
 }

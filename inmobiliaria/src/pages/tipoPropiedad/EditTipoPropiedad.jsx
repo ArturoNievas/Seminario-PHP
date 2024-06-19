@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import validarCampos from '../../utils/validarCampos';
 import conexionServer from '../../utils/conexionServer';
-import HeaderComponent from '../../components/HeaderComponent';
-import FooterComponent from '../../components/FooterComponent';
-import { Oval } from "react-loader-spinner";
 import '../../assets/styles/root.css';
 import '../../assets/styles/loading-oval.css';
 import '../../assets/styles/editStyle.css';
+import FormChangeDatos from '../../components/FormChangeDatos';
 
 function EditTipoPropiedad() {
     let { id } = useParams();
@@ -48,34 +46,14 @@ function EditTipoPropiedad() {
 
     return (
         <>
-            <HeaderComponent />
-            {state==="Loading"?(
-                <div className="loading-oval-container">
-                    <Oval
-                        className="loading-oval"
-                        visible={true}
-                        color="var(--color-oval)"
-                        secondaryColor="var(--color-oval)"
-                        ariaLabel="oval-loading"
-                    />
-                </div>
-            ):(
-                <main className="main-edit">
-                    <h3>Editar Tipo de Propiedad</h3>
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            type="text"
-                            name="nombre"
-                            id="nombre"
-                            defaultValue={data ? data.nombre : ''}
-                            placeholder="Ingresar nombre"
-                        />
-                        <button type="submit">Enviar</button>
-                    </form>
-                    {state === "ERROR" && <p style={{ color: 'red' }}>{`${state}: ${errorMessage.nombre}`}</p>}
-                </main>
-            )}
-            <FooterComponent />
+            <FormChangeDatos 
+                titulo="Editar Tipo de Propiedad" 
+                handleSubmit={handleSubmit} 
+                params={["nombre"]}
+                state={state}
+                errorMessage={errorMessage}
+                data={data}
+            />
         </>
     );
 }
