@@ -15,7 +15,7 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete }) => {
     useEffect(() => {
         conexionServer(`tipos_propiedad/${propiedad.tipo_propiedad_id}`,setTipoPropiedad,setErr);
         conexionServer(`localidades/${propiedad.localidad_id}`,setLocalidad,setErr);
-    }, [propiedad.tipo_propiedad]);
+    }, []);
 
   return (
     <ListItemComponent key={propiedad.id}>
