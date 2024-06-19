@@ -27,6 +27,7 @@ function PropiedadPage() {
     navigate(url);
   };
 
+  //NO FUNCIONA
   function handleClickDelete(event, id ) {
     event.preventDefault();
     //hay que ver como enviar un alert, algo que funcione como condicional

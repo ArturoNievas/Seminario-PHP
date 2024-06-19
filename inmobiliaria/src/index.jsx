@@ -7,6 +7,8 @@ import TipoPropiedadPage from './pages/tipoPropiedad/TipoPropiedadPage';
 import NewTipoPropiedad from './pages/tipoPropiedad/NewTipoPropiedad';
 import EditTipoPropiedad from './pages/tipoPropiedad/EditTipoPropiedad';
 import PropiedadPage from './pages/propiedad/PropiedadPage';
+import EditPropiedad from './pages/propiedad/EditPropiedad';
+import NewPropiedad from './pages/propiedad/NewPropiedad';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
   {
     path: "/propiedad",
     element: <PropiedadPage />,
+  },
+  {
+    path: "/propiedad/create",
+    element: <NewPropiedad />,
+  },
+  {
+    path: "/propiedad/edit/:id",
+    element: <EditPropiedad />,
   },
 ]);
 
