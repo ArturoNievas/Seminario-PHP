@@ -6,6 +6,8 @@ import { Oval } from 'react-loader-spinner';
 import UlComponent from '../../components/UlComponent';
 import { useNavigate } from 'react-router-dom';
 import PropiedadItem from '../../components/PropiedadItem';
+import ButtonComponent from '../../components/ButtonComponent';
+import FiltradoComponent from '../../components/FiltradoComponent';
 
 //OBSERVACION: yo cambiaria el state solo cuando 
 //todos los datos esten completamente cargados
@@ -17,6 +19,7 @@ function PropiedadPage() {
   const [errorMessage,setErrorMessage]=useState(null);
   const navigate=useNavigate();
   const [refresh, setRefresh] = useState(false);
+
 
   useEffect(()=>{
     setState("LOADING");
@@ -58,11 +61,13 @@ function PropiedadPage() {
 
   return (
     <>
-      <HeaderComponent />
+      <HeaderComponent/>
       <main>
         {state==="SUCCESS" ? (
           <div className="div-main">
+            <FiltradoComponent setData={setData} setState={setState}/>
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedades/create`}/>
           </div>
         ) : state==="LOADING" ? (
           <div className="loading-oval-container">

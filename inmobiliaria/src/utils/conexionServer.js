@@ -6,7 +6,7 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
         headers:{
             'Content-Type': 'application/json'
         },
-        body: method !== "GET" ? JSON.stringify(newData) : null,
+        body: (method === "GET" && Object.keys(newData).length === 0) ? null : JSON.stringify(newData),
     })
         .then(response=>{
             if(!response.ok){
