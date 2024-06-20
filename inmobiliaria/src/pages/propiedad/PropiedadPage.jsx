@@ -16,7 +16,6 @@ import FiltradoComponent from '../../components/FiltradoComponent';
 function PropiedadPage() {
   const [data,setData]=useState(null);
   const [state,setState]=useState("LOADING");
-  const [errorMessage,setErrorMessage]=useState(null);
   const navigate=useNavigate();
   const [refresh, setRefresh] = useState(false);
 
@@ -65,7 +64,7 @@ function PropiedadPage() {
       <main>
         {state==="SUCCESS" ? (
           <div className="div-main">
-            <FiltradoComponent setData={setData} setState={setState}/>
+            <FiltradoComponent data={data} setData={setData} setState={setState}/>
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
             <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedades/create`}/>
           </div>
