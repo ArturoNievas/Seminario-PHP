@@ -10,6 +10,7 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
     })
         .then(response=>{
             if(!response.ok){
+                console.log("todo mal");
                 throw new Error(response);
             }
             if (response.status === 204) {
