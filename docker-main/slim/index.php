@@ -840,8 +840,15 @@ $app->get("/inquilinos/{id}",function(Request $request,Response $response, $args
         }
 
         $data = $query->fetch(PDO::FETCH_ASSOC);
-        $response->getBody()->write(json_encode($data));
-        return $response->withStatus(200);
+
+        $payload = [
+            "status" => "success",
+            "code" => 200,
+            "data" => $data
+        ];
+
+        $response->getBody()->write(json_encode($payload));
+        return $response->withHeader('Content-Type','application/json');
     } catch (PDOException $e) {
         $payload = [
             "status" => "error",

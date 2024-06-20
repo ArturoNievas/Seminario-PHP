@@ -9,6 +9,9 @@ import EditTipoPropiedad from './pages/tipoPropiedad/EditTipoPropiedad';
 import PropiedadPage from './pages/propiedad/PropiedadPage';
 import EditPropiedad from './pages/propiedad/EditPropiedad';
 import NewPropiedad from './pages/propiedad/NewPropiedad';
+import ReservaPage from './pages/reservas/ReservaPage';
+import NewReserva from './pages/reservas/NewReserva';
+import EditReserva from './pages/reservas/EditReserva';
 
 const router = createBrowserRouter([
   {
@@ -34,6 +37,18 @@ const router = createBrowserRouter([
   {
     path: "/propiedad/edit/:id",
     element: <EditPropiedad />,
+  },
+  {
+    path: "/reserva",
+    element: <ReservaPage />,
+  },
+  {
+    path: "/reserva/create",
+    element: <NewReserva />,
+  },
+  {
+    path: "/reserva/edit/:id",
+    element: <EditReserva />,
   },
 ]);
 
