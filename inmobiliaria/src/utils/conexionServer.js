@@ -1,6 +1,7 @@
 import config from "./config";
 
 function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
+    
     fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{
@@ -10,8 +11,14 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
     })
         .then(response=>{
             if(!response.ok){
-                console.log("todo mal");
-                throw new Error(response);
+                return response.text().then(text => {
+                    try {
+                        const errorData = JSON.parse(text);
+                        throw new Error(JSON.stringify(errorData));
+                    } catch (e) {
+                        throw new Error(text);
+                    }
+                });
             }
             if (response.status === 204) {
                 return null;
@@ -27,8 +34,13 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
             setState("SUCCESS");
         })
         .catch(error=>{
-            setState(error);
-            console.log("error: ",error);
+            setState("ERROR");
+            try {
+                const parsedError = JSON.parse(error.message);
+                console.log("error: ", parsedError);  // Aquí imprimimos el mensaje de error parseado
+            } catch (e) {
+                console.log("error: ", error.message);  // Aquí imprimimos el mensaje de error como texto
+            }
         })
 }
 

@@ -83,7 +83,7 @@ function EditPropiedad() {
             conexionServer(`propiedades/${id}`, setData, setState, 'PUT', datos);
             
             alert('Propiedad actualizada exitosamente.');
-            //navigate("/propiedad");
+            navigate("/propiedad");
         } catch (err) {
             setState("ERROR");
             const errorObject = JSON.parse(err.message);

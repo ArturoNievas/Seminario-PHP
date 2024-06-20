@@ -25,8 +25,8 @@ const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete }) => {
       <p className='title-li'>{reserva.cantidad_noches}</p>
       <p className='title-li'>{reserva.valor_total}</p>
       <div className='buttons'>
-        <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/propiedad/edit/${propiedad.id}`)} />
-        <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,propiedad.id)} />
+        <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/reserva/edit/${reserva.id}`)} />
+        <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,reserva.id)} />
       </div>
     </ListItemComponent>
   );

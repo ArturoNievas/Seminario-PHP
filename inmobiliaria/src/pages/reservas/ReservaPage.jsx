@@ -5,10 +5,7 @@ import conexionServer from '../../utils/conexionServer';
 import { Oval } from 'react-loader-spinner';
 import UlComponent from '../../components/UlComponent';
 import { useNavigate } from 'react-router-dom';
-import PropiedadItem from '../../components/PropiedadItem';
 import ButtonComponent from '../../components/ButtonComponent';
-import FiltradoComponent from '../../components/FiltradoComponent';
-import ListItemComponent from '../../components/ListitemComponent';
 import ReservaItem from '../../components/ReservaItem';
 //OBSERVACION: yo cambiaria el state solo cuando 
 //todos los datos esten completamente cargados
@@ -63,7 +60,7 @@ function ReservaPage() {
         {state==="SUCCESS" ? (
           <div className="div-main">
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
-            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`}/>
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/reserva/create`}/>
           </div>
         ) : state==="LOADING" ? (
           <div className="loading-oval-container">
