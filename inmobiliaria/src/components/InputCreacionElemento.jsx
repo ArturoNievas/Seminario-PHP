@@ -5,7 +5,7 @@ function input({ param, data }){
                 type="text" 
                 name={`${param}`} 
                 id={`${param}`} 
-                defaultValue={data ? data.nombre : ''}
+                defaultValue={data ? data[param] : ''}
                 placeholder={`ingresar ${param}`}
             />
         </>

@@ -2,11 +2,8 @@ function validarCampos(datos, validacion) {
     let errores = {};
 
     for (let campo in validacion) {
-        console.log("campo: ");
-        console.log(campo);
-        console.log(datos[campo]);
         let existe = (datos[campo] !== null && datos[campo] !== '' && datos[campo]!==undefined);
-        console.log(existe);
+        
         for (let regla in validacion[campo]) {
             if (regla === 'requerido' && validacion[campo][regla]) {
                 if (!existe) {
@@ -37,8 +34,6 @@ function validarCampos(datos, validacion) {
     }
 
     if (Object.keys(errores).length > 0) {
-        console.log("aaa");
-        console.log(JSON.stringify(errores));
         throw new Error(JSON.stringify(errores));
     }
 }

@@ -16,7 +16,7 @@ function NewPropiedad(){
 
         setState("LOADING");
 
-        const formData = new FormData(event.target);
+        let formData = new FormData(event.target);
 
         let datos = {};
         formData.forEach((value, key) => {

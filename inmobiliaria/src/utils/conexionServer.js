@@ -1,6 +1,7 @@
 import config from "./config";
 
 function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
+    console.log(newData);
     fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{

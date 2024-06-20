@@ -18,7 +18,7 @@ function NavBarComponent({value, handleClick}) {
                         <NavLink to="/reserva">Reservas</NavLink>
                     </li>
                     <li>
-                        <NavLink to="/tipoPropiedad">Tipo de propiedades</NavLink>
+                        <NavLink to="/">Tipo de propiedades</NavLink>
                     </li>
                 </ul>
             </nav>
