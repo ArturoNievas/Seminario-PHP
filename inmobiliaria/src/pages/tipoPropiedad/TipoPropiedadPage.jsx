@@ -64,7 +64,7 @@ function TipoPropiedadPage() {
         {state==="SUCCESS" ? (
           <div className="div-main">
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
-            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/tipos_propiedad/create`}/>
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/tipos_propiedad/create`} textContent='Agregar nuevo Tipo de Propiedad'/>
           </div>
         ) : state==="LOADING" ? (
           <div className="loading-oval-container">

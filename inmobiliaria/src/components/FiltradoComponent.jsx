@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import conexionServer from '../utils/conexionServer';
+import '../assets/styles/FiltradoComponent.css';
+import ButtonComponent from './ButtonComponent';
 
 function FiltradoComponent({ data, setData, setState }) {
     const [filtrado,setFiltrado]=useState(false);
@@ -70,27 +72,33 @@ function FiltradoComponent({ data, setData, setState }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="Disponible">Disponible: </label>
-            <input type="checkbox" name="Disponible" id="Disponible" />
-            
-            <label htmlFor="Localidades">Localidad: </label>
-            <select name="Localidades" id="Localidades">
-                {localidades.length > 0 && localidades.map(localidad => (
-                    <option key={localidad.id} value={localidad.id}>
-                        {localidad.nombre}
-                    </option>
-                ))}
-            </select>
-            
-            <label htmlFor="Fecha_inicio">Fecha de inicio: </label>
-            <input type="date" name="Fecha_inicio" id="Fecha_inicio" />
-            
-            <label htmlFor="Cantidad_huespedes">Cantidad de huespedes: </label>
-            <input type="number" name="Cantidad_huespedes" id="Cantidad_huespedes" />
-            
-            <button type="submit" id="1">Aplicar Filtro</button>
-            <button type="submit" id="2">Eliminar Filtro</button>
+        <form onSubmit={handleSubmit} className='formFiltrado'>
+            <div>
+                <label htmlFor="Disponible">Disponible: </label>
+                <input type="checkbox" name="Disponible" id="Disponible" />
+            </div>
+            <div>
+                <label htmlFor="Localidades">Localidad: </label>
+                <select name="Localidades" id="Localidades">
+                    {localidades.length > 0 && localidades.map(localidad => (
+                        <option key={localidad.id} value={localidad.id}>
+                            {localidad.nombre}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div>
+                <label htmlFor="Fecha_inicio">Fecha de inicio: </label>
+                <input type="date" name="Fecha_inicio" id="Fecha_inicio" />    
+            </div>
+            <div>
+                <label htmlFor="Cantidad_huespedes">Cantidad de huespedes: </label>
+                <input type="number" name="Cantidad_huespedes" id="Cantidad_huespedes" />    
+            </div>
+            <div className='button-container'>
+                <ButtonComponent type="add" id="1" textContent='Aplicar Filtro'/>
+                <ButtonComponent type="delete" id="2" textContent='Eliminar Filtro'/>
+            </div>
         </form>
     );
 }

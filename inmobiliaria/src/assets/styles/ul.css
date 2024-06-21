@@ -1,15 +1,16 @@
 .ul{
     display: grid;
-    margin:0px;
+    margin: 10px 0;
     padding: 0px;
     height: 90%;
+    width: 100%;
     justify-items: center;
     align-items: center;
+    gap: 15px;
 }
 
 .ul li{
-  height:70%;
-  max-height: 350px;  
+  height:100%; 
 }
 
 /* Small */

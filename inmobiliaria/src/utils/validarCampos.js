@@ -10,7 +10,7 @@ function validarCampos(datos, validacion) {
                     errores[campo] = campo + " es requerido.";
                 }
             } else if (regla === 'bool' && existe) {
-                if (typeof datos[campo] !== 'boolean') {
+                if (datos[campo] !== 1 && datos[campo] !== 0) {
                     errores[campo] = campo + " debe ser un valor booleano.";
                 }
             } else if (regla === 'int' && existe) {

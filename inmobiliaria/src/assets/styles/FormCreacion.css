@@ -1,0 +1,27 @@
+.main-edit{
+    width: 100%;
+    height: 100%;
+}
+
+.div-main-edit{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: max-content;
+    min-height: 150px;
+    padding: 2px 5px 5px 5px;
+    margin-top: 5px;
+    max-width: 100vw;
+    border-radius: 20px;
+    border: 2px solid;
+    border-color: var(--color-primary);
+}
+
+.formCreacion{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: max-content;
+    align-items: center;
+}

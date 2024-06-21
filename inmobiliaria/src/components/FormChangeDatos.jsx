@@ -2,6 +2,8 @@ import HeaderComponent from "./HeaderComponent";
 import FooterComponent from "./FooterComponent";
 import { Oval } from "react-loader-spinner";
 import InputCreacionElemento from './InputCreacionElemento';
+import '../assets/styles/FormCreacion.css';
+import ButtonComponent from "./ButtonComponent";
 
 function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, data = null }) {
     return (
@@ -19,20 +21,22 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
                 </div>
             ) : (
                 <main className="main-edit">
-                    <h3>{titulo}</h3>
-                    <form onSubmit={(event) => handleSubmit(event)}>
-                        {params.map((param, index) => (
-                            <InputCreacionElemento key={index} param={param} data={data} />
-                        ))}
-                        <button type="submit">Enviar</button>
-                    </form>
-                    {state === "ERROR" && (
-                        <div style={{ color: 'red' }}>
-                            {Object.entries(errorMessage).map(([key, error]) => (
-                                <p key={key}>{`${error}`}</p>
+                    <div className="div-main-edit">
+                        <h3>{titulo}</h3>
+                        <form className="formCreacion" onSubmit={(event) => handleSubmit(event)}>
+                            {params.map((param, index) => (
+                                <InputCreacionElemento key={index} param={param} data={data} />
                             ))}
-                        </div>
-                    )}
+                            <ButtonComponent type="add"/>
+                        </form>
+                        {state === "ERROR" && (
+                            <div style={{ color: 'red' }}>
+                                {Object.entries(errorMessage).map(([key, error]) => (
+                                    <p key={key}>{`${error}`}</p>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </main>
             )}
             <FooterComponent />

@@ -63,7 +63,7 @@ function PropiedadPage() {
           <div className="div-main">
             <FiltradoComponent data={data} setData={setData} setState={setState}/>
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
-            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`}/>
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`} textContent='Agregar nueva Propiedad'/>
           </div>
         ) : state==="LOADING" ? (
           <div className="loading-oval-container">

@@ -21,9 +21,10 @@ function NewPropiedad(){
         let datos = {};
         formData.forEach((value, key) => {
             if(value==='true'){
-                datos[key]=true;
+                datos[key]=1;
             }else if(value==='false'){
-                datos[key]=false;
+                datos[key]=0;
+                console.log(typeof datos[key]);
             }else if(value!==''){
                 datos[key] = value;
             }
@@ -77,11 +78,14 @@ function NewPropiedad(){
 
             await conexionServer("propiedades", setData, setState, "POST", datos);
             
+
+
             alert('Ingreso de datos exitoso.');
-            
+             
             setTimeout(() => {
                 navigate("/propiedad");
             }, 5000);
+            
         } catch (err) {
             setState("ERROR");
             const errorObject = JSON.parse(err.message);

@@ -31,9 +31,7 @@ function EditTipoPropiedad() {
         };
 
         try {
-            console.log('entre');
             validarCampos(datos,validaciones);
-            console.log('sali');
             conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre});
             alert('Tipo de propiedad actualizado exitosamente.');
             navigate("/");

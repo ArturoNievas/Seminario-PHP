@@ -26,9 +26,9 @@ function EditPropiedad() {
         let datos = {};
         formData.forEach((value, key) => {
             if(value==='true'){
-                datos[key]=true;
+                datos[key]=1;
             }else if(value==='false'){
-                datos[key]=false;
+                datos[key]=0;
             }else if(value!==''){
                 datos[key] = value;
             }
@@ -85,6 +85,7 @@ function EditPropiedad() {
             alert('Propiedad actualizada exitosamente.');
             navigate("/propiedad");
         } catch (err) {
+            console.log(err);
             setState("ERROR");
             const errorObject = JSON.parse(err.message);
             setErrorMessage(errorObject);

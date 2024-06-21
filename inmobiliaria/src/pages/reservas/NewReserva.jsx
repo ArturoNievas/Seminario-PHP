@@ -21,9 +21,9 @@ function NewReserva(){
         let datos = {};
         formData.forEach((value, key) => {
             if(value==='true'){
-                datos[key]=true;
+                datos[key]=1;
             }else if(value==='false'){
-                datos[key]=false;
+                datos[key]=0;
             }else if(value!==''){
                 datos[key] = value;
             }
