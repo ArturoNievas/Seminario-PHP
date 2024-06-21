@@ -87,7 +87,6 @@ function EditPropiedad() {
                 navigate("/propiedad");
             }
         } catch (err) {
-            console.log(err);
             setState("ERROR");
             const errorObject = JSON.parse(err.message);
             setErrorMessage(errorObject);

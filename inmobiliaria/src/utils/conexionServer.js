@@ -11,14 +11,7 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
     })
         .then(response=>{
             if(!response.ok){
-                return response.text().then(text => {
-                    try {
-                        const errorData = JSON.parse(text);
-                        throw new Error(JSON.stringify(errorData));
-                    } catch (e) {
-                        throw new Error(text);
-                    }
-                });
+                throw new Error('La solicitud no fue exitosa: ' + response.status);
             }
             if (response.status === 204) {
                 return null;
@@ -33,7 +26,6 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
             }
             setState("SUCCESS");
         })
-       
 }
 
 export default conexionServer;
