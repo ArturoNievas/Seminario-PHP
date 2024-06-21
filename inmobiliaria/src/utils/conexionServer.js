@@ -33,15 +33,7 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
             }
             setState("SUCCESS");
         })
-        .catch(error=>{
-            setState("ERROR");
-            try {
-                const parsedError = JSON.parse(error.message);
-                console.log("error: ", parsedError);  // Aquí imprimimos el mensaje de error parseado
-            } catch (e) {
-                console.log("error: ", error.message);  // Aquí imprimimos el mensaje de error como texto
-            }
-        })
+       
 }
 
 export default conexionServer;

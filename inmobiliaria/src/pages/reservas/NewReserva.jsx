@@ -51,7 +51,7 @@ function NewReserva(){
         try {
             validarCampos(datos, validaciones);
 
-            await conexionServer("reservas", setData, setState, "POST", datos);
+            conexionServer("reservas", setData, setState, "POST", datos);
             
             if(state==="SUCCESS"){
                 alert('Ingreso de datos exitoso.');
@@ -62,7 +62,6 @@ function NewReserva(){
             }
         } catch (err) {
             setState("ERROR");
-            console.log(err);
             const errorObject = JSON.parse(err.message);
             setErrorMessage(errorObject);
         }

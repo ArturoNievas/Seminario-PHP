@@ -82,8 +82,10 @@ function EditPropiedad() {
 
             conexionServer(`propiedades/${id}`, setData, setState, 'PUT', datos);
             
-            alert('Propiedad actualizada exitosamente.');
-            navigate("/propiedad");
+            if(state==="SUCCESS"){
+                alert('Propiedad actualizada exitosamente.');
+                navigate("/propiedad");
+            }
         } catch (err) {
             console.log(err);
             setState("ERROR");

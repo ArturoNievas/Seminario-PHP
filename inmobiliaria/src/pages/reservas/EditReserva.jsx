@@ -57,9 +57,10 @@ function EditPropiedad() {
             validarCampos(datos,validaciones);
 
             conexionServer(`reservas/${id}`, setData, setState, 'PUT', datos);
-            
-            alert('Reserva actualizada exitosamente.');
-            navigate("/reserva");
+            if(state==="SUCCESS"){
+                alert('Reserva actualizada exitosamente.');
+                navigate("/reserva");
+            }
         } catch (err) {
             setState("ERROR");
             const errorObject = JSON.parse(err.message);

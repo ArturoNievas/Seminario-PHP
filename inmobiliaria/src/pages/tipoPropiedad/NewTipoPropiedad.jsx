@@ -31,7 +31,7 @@ function NewTipoPropiedad(){
             validarCampos(datos, validaciones);
             console.log(datos);
 
-            await conexionServer("tipos_propiedad", setData, setState, "POST", datos);
+            conexionServer("tipos_propiedad", setData, setState, "POST", datos);
             
             if(state==="SUCCESS"){
                 alert('Ingreso de datos exitoso.');
