@@ -18,7 +18,6 @@ function TipoPropiedadPage() {
   //se ejecuta todo el tiempo, no solo cuando llamamos a setData. idk
   useEffect(() => {
     conexionServer("tipos_propiedad", setData, setState);
-    
   },[]);
 
   function handleClickCreate(event, url) {
@@ -40,11 +39,11 @@ function TipoPropiedadPage() {
   */
   function handleClickDelete(event, id ) {
     event.preventDefault();
-    //hay que ver como enviar un alert, algo que funcione como condicional
-    //Se debe pedir confirmación antes de realizar la acción.
-
-    conexionServer(`tipos_propiedad/${id}`, setData, setState, "DELETE");
-    alert("propiedad eliminada");
+    const confirmDelete = window.confirm('¿Estás seguro de eliminar este tipo de propiedad?');
+    if (confirmDelete) {
+      conexionServer(`tipos_propiedad/${id}`, setData, setState, "DELETE");
+      alert("Tipo de propiedad eliminado");
+    }
   }
 
   const childrenItem = (propiedad) => (
