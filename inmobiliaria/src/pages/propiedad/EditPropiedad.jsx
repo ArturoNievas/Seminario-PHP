@@ -13,7 +13,7 @@ function EditPropiedad() {
     const [data, setData] = useState(null);
     const [state, setState] = useState("Loading");
     const [errorMessage, setErrorMessage] = useState("");
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
     useEffect(()=>{
         conexionServer(`propiedades/${id}`, setData, setState);
@@ -37,6 +37,11 @@ function EditPropiedad() {
         let validaciones = { 
             'domicilio': {
                 'requerido': true,
+                'longitud': 25
+            },
+            'tipo_imagen': {
+                'url': true,
+                'longitud': 50
             },
             'localidad_id' : {
                 'requerido':true,

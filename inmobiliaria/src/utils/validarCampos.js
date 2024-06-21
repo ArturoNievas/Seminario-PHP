@@ -1,3 +1,5 @@
+import validarUrl from "./validarUrl";
+
 function validarCampos(datos, validacion) {
     let errores = {};
 
@@ -25,6 +27,8 @@ function validarCampos(datos, validacion) {
                 if (isNaN(parseFloat(datos[campo]))) {
                     errores[campo] = campo + " debe ser un número.";
                 }
+            } else if (regla === 'url' && existe) {
+                validarUrl(datos[campo]);
             } else if (regla === 'longitud' && existe) {
                 if (datos[campo].length > validacion[campo][regla]) {
                     errores[campo] = campo + " debe tener un máximo de " + validacion[campo][regla] + " caracteres.";

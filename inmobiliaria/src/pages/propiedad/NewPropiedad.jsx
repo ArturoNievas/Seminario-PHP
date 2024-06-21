@@ -33,6 +33,11 @@ function NewPropiedad(){
         let validaciones = { 
             'domicilio': {
                 'requerido': true,
+                'longitud': 25
+            },
+            'tipo_imagen': {
+                'url': true,
+                'longitud': 50
             },
             'localidad_id' : {
                 'requerido':true,
