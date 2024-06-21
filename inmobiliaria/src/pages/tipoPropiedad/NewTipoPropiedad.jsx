@@ -27,11 +27,10 @@ function NewTipoPropiedad(){
             } 
         };
 
-        try {
-            validarCampos(datos, validaciones);
-            console.log(datos);
-
-            conexionServer("tipos_propiedad", setData, setState, "POST", datos);
+        validarCampos(datos, validaciones, setState, setErrorMessage);
+        
+        if(state!=="ERROR"){
+            conexionServer("tipos_propiedad", setData, setState, "POST", datos, setErrorMessage);
             
             if(state==="SUCCESS"){
                 alert('Ingreso de datos exitoso.');
@@ -40,10 +39,6 @@ function NewTipoPropiedad(){
                     navigate("/");
                 }, 5000);
             }
-        } catch (err) {
-            setState("ERROR");
-            const errorObject = JSON.parse(err.message);
-            setErrorMessage(errorObject);
         }
     }
 

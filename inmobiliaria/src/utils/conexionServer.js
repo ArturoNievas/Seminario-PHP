@@ -1,7 +1,6 @@
 import config from "./config";
 
-function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
-    
+function conexionServer(endpoint,setData, setState, method = "GET", newData={}, setErrorMessage){
     fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{
@@ -11,7 +10,9 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
     })
         .then(response=>{
             if(!response.ok){
-                throw new Error('La solicitud no fue exitosa: ' + response.status);
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
             }
             if (response.status === 204) {
                 return null;
@@ -26,6 +27,11 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}){
             }
             setState("SUCCESS");
         })
+        .catch(error => {
+            setState("ERROR");
+            const parsedError = JSON.parse(error.message);
+            setErrorMessage(parsedError); 
+        });
 }
 
 export default conexionServer;

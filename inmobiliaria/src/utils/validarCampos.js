@@ -1,4 +1,4 @@
-function validarCampos(datos, validacion) {
+function validarCampos(datos, validacion, setState, setErrorMessage) {
     let errores = {};
 
     for (let campo in validacion) {
@@ -34,7 +34,8 @@ function validarCampos(datos, validacion) {
     }
 
     if (Object.keys(errores).length > 0) {
-        throw new Error(JSON.stringify(errores));
+        setState("ERROR");
+        setErrorMessage(errores);
     }
 }
 

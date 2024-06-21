@@ -30,17 +30,16 @@ function EditTipoPropiedad() {
             }
         };
 
-        try {
-            validarCampos(datos,validaciones);
-            conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre});
+        validarCampos(datos, validaciones, setState, setErrorMessage);
+        
+        if(state!=="ERROR"){
+
+            conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre}, setErrorMessage);
+            
             if(state="SUCCESS"){
                 alert('Tipo de propiedad actualizado exitosamente.');
                 navigate("/");
-            }
-        } catch (err) {
-            setState("ERROR");
-            const errorObject = JSON.parse(err.message);
-            setErrorMessage(errorObject);
+            }  
         }
     };
 

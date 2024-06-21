@@ -48,22 +48,16 @@ function NewReserva(){
             }
         };
 
-        try {
-            validarCampos(datos, validaciones);
+        validarCampos(datos, validaciones, setState, setErrorMessage);
+        
+        if(state!=="ERROR"){
 
-            conexionServer("reservas", setData, setState, "POST", datos);
+            conexionServer(`reservas`, setData, setState, 'POST', datos, setErrorMessage);
             
             if(state==="SUCCESS"){
-                alert('Ingreso de datos exitoso.');
-            
-                setTimeout(() => {
-                    navigate("/reserva");
-                }, 5000);
+                alert('Reserva creada exitosamente.');
+                navigate("/reserva");
             }
-        } catch (err) {
-            setState("ERROR");
-            const errorObject = JSON.parse(err.message);
-            setErrorMessage(errorObject);
         }
     }
 

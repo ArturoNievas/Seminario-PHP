@@ -53,18 +53,16 @@ function EditPropiedad() {
             }
         };
 
-        try {
-            validarCampos(datos,validaciones);
+        validarCampos(datos, validaciones, setState, setErrorMessage);
+        
+        if(state!=="ERROR"){
 
-            conexionServer(`reservas/${id}`, setData, setState, 'PUT', datos);
+            conexionServer(`reservas/${id}`, setData, setState, 'PUT', datos, setErrorMessage);
+            
             if(state==="SUCCESS"){
                 alert('Reserva actualizada exitosamente.');
                 navigate("/reserva");
             }
-        } catch (err) {
-            setState("ERROR");
-            const errorObject = JSON.parse(err.message);
-            setErrorMessage(errorObject);
         }
     };
 
