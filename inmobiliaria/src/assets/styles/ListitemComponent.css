@@ -20,3 +20,7 @@
 .list-item, .title-li{
     color: var(--color-secundary);
 }
+
+img{
+    max-width: 100%;
+}

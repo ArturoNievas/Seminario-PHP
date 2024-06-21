@@ -33,12 +33,13 @@ function NewTipoPropiedad(){
 
             await conexionServer("tipos_propiedad", setData, setState, "POST", datos);
             
-            alert('Ingreso de datos exitoso.');
+            if(state==="SUCCESS"){
+                alert('Ingreso de datos exitoso.');
             
-            setTimeout(() => {
-                navigate("/");
-            }, 5000);
-            
+                setTimeout(() => {
+                    navigate("/");
+                }, 5000);
+            }
         } catch (err) {
             setState("ERROR");
             const errorObject = JSON.parse(err.message);

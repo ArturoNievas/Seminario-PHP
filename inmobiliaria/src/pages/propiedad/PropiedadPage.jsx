@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import PropiedadItem from '../../components/PropiedadItem';
 import ButtonComponent from '../../components/ButtonComponent';
 import FiltradoComponent from '../../components/FiltradoComponent';
-
 //OBSERVACION: yo cambiaria el state solo cuando 
 //todos los datos esten completamente cargados
 //(nos evitamoos un error que salta cuando intentas borrar una propiedad 

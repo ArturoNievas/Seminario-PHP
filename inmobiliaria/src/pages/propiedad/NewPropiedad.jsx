@@ -77,15 +77,14 @@ function NewPropiedad(){
             validarCampos(datos, validaciones);
 
             await conexionServer("propiedades", setData, setState, "POST", datos);
-            
-
-
-            alert('Ingreso de datos exitoso.');
              
-            setTimeout(() => {
-                navigate("/propiedad");
-            }, 5000);
-            
+            if(state==="SUCCESS"){
+                alert('Ingreso de datos exitoso.');
+
+                setTimeout(() => {
+                    navigate("/propiedad");
+                }, 5000);
+            }
         } catch (err) {
             setState("ERROR");
             const errorObject = JSON.parse(err.message);
@@ -101,7 +100,7 @@ function NewPropiedad(){
                 handleSubmit={sendData} 
                 params={["domicilio","localidad_id","cantidad_habitaciones","cantidad_banios"
                     ,"cochera","cantidad_huespedes","fecha_inicio_disponibilidad","cantidad_dias"
-                    ,"disponible","valor_noche","tipo_propiedad_id"]}
+                    ,"disponible","valor_noche","tipo_propiedad_id","imagen","tipo_imagen"]}
                 state={state}
                 errorMessage={errorMessage}
             />

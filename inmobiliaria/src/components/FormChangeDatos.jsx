@@ -29,14 +29,14 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
                             ))}
                             <ButtonComponent type="add"/>
                         </form>
-                        {state === "ERROR" && (
-                            <div style={{ color: 'red' }}>
-                                {Object.entries(errorMessage).map(([key, error]) => (
-                                    <p key={key}>{`${error}`}</p>
-                                ))}
-                            </div>
-                        )}
                     </div>
+                    {state === "ERROR" && (
+                        <div style={{ color: 'red' }}>
+                            {Object.entries(errorMessage).map(([key, error]) => (
+                                <p key={key}>{`${error}`}</p>
+                            ))}
+                        </div>
+                    )}
                 </main>
             )}
             <FooterComponent />
