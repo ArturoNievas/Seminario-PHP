@@ -11,7 +11,12 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}, 
         .then(response=>{
             if(!response.ok){
                 return response.text().then(text => {
-                    throw new Error(text);
+                    try {
+                        const errorData = JSON.parse(text);
+                        throw new Error(JSON.stringify(errorData));
+                    } catch (e) {
+                        throw new Error(text);
+                    }
                 });
             }
             if (response.status === 204) {

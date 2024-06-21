@@ -77,16 +77,19 @@ function EditPropiedad() {
             }
         };
 
-        validarCampos(datos, validaciones, setState, setErrorMessage);
-        
-        if(state!=="ERROR"){
+        try {
+            validarCampos(datos,validaciones);
 
-            conexionServer(`propiedades/${id}`, setData, setState, 'PUT', datos, setErrorMessage);
+            conexionServer(`propiedades/${id}`, setData, setState, 'PUT', datos);
             
             if(state==="SUCCESS"){
                 alert('Propiedad actualizada exitosamente.');
                 navigate("/propiedad");
             }
+        }catch (err) {
+            setState("ERROR");
+            const errorObject = JSON.parse(err.message);
+            setErrorMessage(errorObject);
         }
     };
 
