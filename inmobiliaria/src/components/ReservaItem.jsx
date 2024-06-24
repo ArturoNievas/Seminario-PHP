@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import ListItemComponent from './ListitemComponent';
 import ButtonComponent from './ButtonComponent';
 import conexionServer from '../utils/conexionServer';
+import '../assets/styles/ListitemComponent.css';
 
 //no me gusta como se maneja esto, hay que corregirlo
 //para mi no se tendria que mostrar el item entero hasta que cargue cada componente
@@ -18,7 +18,7 @@ const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete }) => {
     }, [reserva]);
 
   return (
-    <ListItemComponent key={reserva.id}>
+    <li className="list-item" key={reserva.id}>
       <p className='title-li'>{propiedad===""?"Cargando...":propiedad.domicilio}</p>
       <p className='title-li'>{inquilino===""?"Cargando...":inquilino.nombre}</p>
       <p className='title-li'>{reserva.fecha_desde}</p>
@@ -28,7 +28,7 @@ const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete }) => {
         <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/reserva/edit/${reserva.id}`)} />
         <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,reserva.id)} />
       </div>
-    </ListItemComponent>
+    </li>
   );
 };
 

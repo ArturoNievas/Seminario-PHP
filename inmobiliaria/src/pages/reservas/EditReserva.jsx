@@ -63,12 +63,14 @@ function EditPropiedad() {
             }
         }catch (err) {
             setState("ERROR");
+            let errorObject;
             try {
-                const errorObject = JSON.parse(err.message);
-                setErrorMessage(errorObject);
+                errorObject = JSON.parse(err.message);
             } catch (parseError) {
-                setErrorMessage(err.message);
+                errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
             }
+
+            setErrorMessage(errorObject);
         }
     };
 

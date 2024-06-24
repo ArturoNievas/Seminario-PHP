@@ -1,5 +1,5 @@
+import '../assets/styles/ListitemComponent.css';
 import React, { useEffect, useState } from 'react';
-import ListItemComponent from './ListitemComponent';
 import ButtonComponent from './ButtonComponent';
 import conexionServer from '../utils/conexionServer';
 //import imagen from '../assets/images/840_560.jpeg';
@@ -19,7 +19,7 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, imagen }
     }, [propiedad]);
 
   return (
-    <ListItemComponent key={propiedad.id}>
+    <li className="list-item" key={propiedad.id}>
       <p className='title-li'>{propiedad.domicilio}</p>
       {propiedad.imagen!=null && ( <img src={propiedad.imagen} type={`image/${propiedad.tipo_imagen}`} alt="imagen de la casa"/> )}
       <p className='title-li'>{localidad===""?"Cargando...":localidad.nombre}</p>
@@ -31,7 +31,7 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, imagen }
         <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/propiedad/edit/${propiedad.id}`)} />
         <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,propiedad.id)} />
       </div>
-    </ListItemComponent>
+    </li>
   );
 };
 
