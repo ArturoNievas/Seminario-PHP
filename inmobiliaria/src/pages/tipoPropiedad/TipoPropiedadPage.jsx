@@ -41,8 +41,14 @@ function TipoPropiedadPage() {
     event.preventDefault();
     const confirmDelete = window.confirm('¿Estás seguro de eliminar este tipo de propiedad?');
     if (confirmDelete) {
+      let copy = JSON.parse(JSON.stringify(data));
+      console.log(copy);
       conexionServer(`tipos_propiedad/${id}`, setData, setState, "DELETE");
       alert("Tipo de propiedad eliminado");
+      copy = copy.filter(tp => tp.id !== id);
+      console.log(copy);
+      setData(copy);
+      console.log(data);
     }
   }
 
