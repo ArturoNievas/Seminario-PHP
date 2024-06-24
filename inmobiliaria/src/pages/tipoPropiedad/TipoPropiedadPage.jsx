@@ -11,14 +11,13 @@ import { Oval } from "react-loader-spinner";
 function TipoPropiedadPage() {
   const [data, setData] = useState([]);
   const [state, setState] = useState("LOADING");
+  const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
 
-  //para mi hay que ponerle el useEffect con [data] para que se ejecute
-  //cuando cambie el valor del data y que actualice el main pero
-  //se ejecuta todo el tiempo, no solo cuando llamamos a setData. idk
   useEffect(() => {
+    setState("LOADING");
     conexionServer("tipos_propiedad", setData, setState);
-  },[]);
+  },[refresh]);
 
   function handleClickCreate(event, url) {
     event.preventDefault();
@@ -43,6 +42,7 @@ function TipoPropiedadPage() {
     if (confirmDelete) {
       conexionServer(`tipos_propiedad/${id}`, setData, setState, "DELETE");
       alert("Tipo de propiedad eliminado");
+      setRefresh(!refresh);
     }
   }
 

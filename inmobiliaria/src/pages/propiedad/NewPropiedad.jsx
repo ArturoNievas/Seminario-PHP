@@ -24,7 +24,6 @@ function NewPropiedad(){
                 datos[key]=1;
             }else if(value==='false'){
                 datos[key]=0;
-                console.log(typeof datos[key]);
             }else if(value!==''){
                 datos[key] = value;
             }
@@ -81,7 +80,7 @@ function NewPropiedad(){
         try {
             validarCampos(datos, validaciones);
 
-            conexionServer("propiedades", setData, setState, "POST", datos);
+            conexionServer("propiedades", setData, setState, "POST", datos,setErrorMessage);
              
             if(state==="SUCCESS"){
                 alert('Ingreso de datos exitoso.');
@@ -92,8 +91,12 @@ function NewPropiedad(){
             }
         } catch (err) {
             setState("ERROR");
-            const errorObject = JSON.parse(err.message);
-            setErrorMessage(errorObject);
+            try {
+                const errorObject = JSON.parse(err.message);
+                setErrorMessage(errorObject);
+            } catch (parseError) {
+                setErrorMessage(err.message);
+            }
         }
     }
 

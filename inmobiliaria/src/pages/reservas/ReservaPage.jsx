@@ -15,13 +15,11 @@ function ReservaPage() {
   const [data,setData]=useState(null);
   const [state,setState]=useState("LOADING");
   const navigate=useNavigate();
-  const [refresh, setRefresh] = useState(false);
-
 
   useEffect(()=>{
     setState("LOADING");
     conexionServer("reservas",setData,setState);
-  },[refresh]);
+  },[]);
 
   function handleClickCreate(event, url) {
     event.preventDefault();
@@ -42,7 +40,6 @@ function ReservaPage() {
 
     conexionServer(`reservas/${id}`, setData, setState, "DELETE");
     alert("reserva eliminada");
-    setRefresh(!refresh);
   }
 
   const childrenItem = (reserva) => (

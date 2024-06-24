@@ -34,6 +34,7 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}, 
         })
         .catch(error => {
             setState("ERROR");
+            console.log(error.message);
             const parsedError = JSON.parse(error.message);
             setErrorMessage(parsedError); 
         });

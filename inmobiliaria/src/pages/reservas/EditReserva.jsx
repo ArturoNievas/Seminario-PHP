@@ -63,8 +63,12 @@ function EditPropiedad() {
             }
         }catch (err) {
             setState("ERROR");
-            const errorObject = JSON.parse(err.message);
-            setErrorMessage(errorObject);
+            try {
+                const errorObject = JSON.parse(err.message);
+                setErrorMessage(errorObject);
+            } catch (parseError) {
+                setErrorMessage(err.message);
+            }
         }
     };
 
