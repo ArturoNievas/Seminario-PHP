@@ -38,12 +38,12 @@ function PropiedadPage() {
   //tira state===ERROR
   function handleClickDelete(event, id ) {
     event.preventDefault();
-    //hay que ver como enviar un alert, algo que funcione como condicional
-    //Se debe pedir confirmación antes de realizar la acción.
-
-    conexionServer(`propiedades/${id}`, setData, setState, "DELETE");
-    alert("propiedad eliminada");
-    setRefresh(!refresh);
+    const confirmDelete = window.confirm('¿Estás seguro de eliminar esta propiedad?');
+    if (confirmDelete) {
+      conexionServer(`propiedades/${id}`, setData, setState, "DELETE");
+      alert("Propiedad eliminada");
+      setRefresh(!refresh);
+    }
   }
 
   const childrenItem = (propiedad) => (

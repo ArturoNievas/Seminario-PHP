@@ -14,12 +14,13 @@ import ReservaItem from '../../components/ReservaItem';
 function ReservaPage() {
   const [data,setData]=useState(null);
   const [state,setState]=useState("LOADING");
+  const [refresh, setRefresh] = useState(false);
   const navigate=useNavigate();
 
   useEffect(()=>{
     setState("LOADING");
     conexionServer("reservas",setData,setState);
-  },[]);
+  },[refresh]);
 
   function handleClickCreate(event, url) {
     event.preventDefault();
@@ -35,11 +36,12 @@ function ReservaPage() {
   //tira state===ERROR
   function handleClickDelete(event, id ) {
     event.preventDefault();
-    //hay que ver como enviar un alert, algo que funcione como condicional
-    //Se debe pedir confirmación antes de realizar la acción.
-
-    conexionServer(`reservas/${id}`, setData, setState, "DELETE");
-    alert("reserva eliminada");
+    const confirmDelete = window.confirm('¿Estás seguro de eliminar esta reserva?');
+    if (confirmDelete) {
+      conexionServer(`reservas/${id}`, setData, setState, "DELETE");
+      alert("Reserva eliminada");
+      setRefresh(!refresh);
+    }
   }
 
   const childrenItem = (reserva) => (
