@@ -7,9 +7,9 @@ import FormChangeDatos from "../../components/FormChangeDatos";
 //hay variables que sobran me parece
 function NewTipoPropiedad(){
     const navigate = useNavigate();
-    const [data,setData]=useState({});
-    const [state,setState]=useState("LOADING");
-    const [errorMessage, setErrorMessage] = useState("");
+    const [data,setData] = useState({});
+    const [state,setState] = useState("LOADING");
+    const [errorMessage, setErrorMessage] = useState({});
 
     async function sendData(event){
         event.preventDefault();
@@ -41,12 +41,14 @@ function NewTipoPropiedad(){
             }
         } catch (err) {
             setState("ERROR");
+            let errorObject;
             try {
-                const errorObject = JSON.parse(err.message);
-                setErrorMessage(errorObject);
+                errorObject = JSON.parse(err.message);
             } catch (parseError) {
-                setErrorMessage(err.message);
+                errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
             }
+
+            setErrorMessage(errorObject);
         }
     }
 

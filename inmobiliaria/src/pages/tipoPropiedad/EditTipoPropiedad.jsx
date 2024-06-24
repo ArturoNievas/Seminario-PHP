@@ -11,7 +11,7 @@ function EditTipoPropiedad() {
     let { id } = useParams();
     const [data, setData] = useState(null);
     const [state, setState] = useState("Loading");
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState({});
     const navigate=useNavigate();
 
     useEffect(()=>{
@@ -33,18 +33,20 @@ function EditTipoPropiedad() {
         try {
             validarCampos(datos,validaciones);
             conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre});
-            if(state==="SUCCESS"){
+            if (state === "SUCCESS") {
                 alert('Tipo de propiedad actualizado exitosamente.');
                 navigate("/");
             }  
         } catch (err) {
             setState("ERROR");
+            let errorObject;
             try {
-                const errorObject = JSON.parse(err.message);
-                setErrorMessage(errorObject);
+                errorObject = JSON.parse(err.message);
             } catch (parseError) {
-                setErrorMessage(err.message);
+                errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
             }
+
+            setErrorMessage(errorObject);
         }
     };
 
