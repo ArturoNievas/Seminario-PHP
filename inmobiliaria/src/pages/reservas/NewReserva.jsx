@@ -12,12 +12,6 @@ function NewReserva(){
     const [state,setState]=useState("LOADING");
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(()=>{
-        console.log("hola");
-    },[]);
-
-console.log(id);
-
     async function sendData(event){
         event.preventDefault();
 
@@ -56,6 +50,7 @@ console.log(id);
         };
 
         try {
+            
             validarCampos(datos,validaciones);
 
             conexionServer("reservas", "POST", datos).then(() => {
@@ -67,6 +62,7 @@ console.log(id);
                 const parsedError = JSON.parse(error.message);
                 setErrorMessage(parsedError); 
             });
+            
         }catch (err) {
             setState("ERROR");
             let errorObject;
@@ -88,7 +84,7 @@ console.log(id);
                 params={["fecha_desde","cantidad_noches"]}
                 state={state}
                 errorMessage={errorMessage}
-                camposDeSeleccion={["inquilino"]}
+                camposDeSeleccion={["inquilinos"]}
             />
         </>
     );

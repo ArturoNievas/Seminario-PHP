@@ -26,11 +26,6 @@ function ReservaPage() {
       .catch(() => setState("ERROR"));
   }, [refresh]);
 
-  function handleClickCreate(event, url) {
-    event.preventDefault();
-    navigate(url);
-  };
-
   function handleClickEdit(event, url) {
     event.preventDefault();
     navigate(url);
@@ -67,7 +62,6 @@ function ReservaPage() {
         {state === "SUCCESS" ? (
           <div className="div-main">
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
-            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/reserva/create`} textContent='Agregar nueva Reserva' />
           </div>
         ) : state === "LOADING" ? (
           <div className="loading-oval-container">
