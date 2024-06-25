@@ -18,14 +18,14 @@ function PropiedadPage() {
   const navigate=useNavigate();
   const [refresh, setRefresh] = useState(false);
 
-
   useEffect(()=>{
     setState("LOADING");
     conexionServer("propiedades").then( response => {
       setData(response.data);
       setState("SUCCESS");
-    });
+    });  
   },[refresh]);
+
 
   function handleClickCreate(event, url) {
     event.preventDefault();

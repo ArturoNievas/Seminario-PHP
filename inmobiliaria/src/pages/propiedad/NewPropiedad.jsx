@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import validarCampos from "../../utils/validarCampos";
 import conexionServer from "../../utils/conexionServer";
@@ -8,8 +8,19 @@ import FormChangeDatos from "../../components/FormChangeDatos";
 function NewPropiedad(){
     const navigate = useNavigate();
     const [data,setData]=useState({});
+    const [localidades,setLocalidades]=useState(null);
+    const [tipoPropiedades,setTipoPropiedades]=useState(null);
     const [state,setState]=useState("LOADING");
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(()=>{
+        conexionServer("localidades").then( response => {
+          setLocalidades(response.data);
+        });
+        conexionServer("tipos_propiedad").then( response => {
+          setTipoPropiedades(response.data);
+        });
+    },[]);
 
     async function sendData(event){
         event.preventDefault();
@@ -80,14 +91,15 @@ function NewPropiedad(){
         try {
             validarCampos(datos, validaciones);
 
-            conexionServer("propiedades", setData, setState, "POST", datos,setErrorMessage);
+            conexionServer("propiedades", "POST", datos).then( () => {
+                setState("SUCCESS");
+            }).catch( error => {
+                setErrorMessage(error);
+                setState("ERROR");
+            });
              
             if(state==="SUCCESS"){
                 alert('Ingreso de datos exitoso.');
-
-                setTimeout(() => {
-                    navigate("/propiedad");
-                }, 5000);
             }
         } catch (err) {
             setState("ERROR");

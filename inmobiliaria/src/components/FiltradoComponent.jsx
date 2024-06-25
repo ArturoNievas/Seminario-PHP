@@ -8,7 +8,10 @@ function FiltradoComponent({ data, setData, setState }) {
     const [localidades,setLocalidades]=useState([]);
 
     useEffect(()=>{
-        conexionServer(`localidades`,setLocalidades,setState,"GET");
+        conexionServer(`localidades`).then( response => {
+            setLocalidades(response.data);
+            setState("SUCCESS");
+        });
     },[]);
 
     //falta validar los campos
@@ -58,14 +61,20 @@ function FiltradoComponent({ data, setData, setState }) {
             //console.log(newData);
             let queryParams = new URLSearchParams(newData).toString();
             console.log(`propiedades?${queryParams}`);
-            conexionServer(`propiedades?${queryParams}`,setData,setState,"GET");
+            conexionServer(`propiedades?${queryParams}`).then( response => {
+                setData(response.data);
+                setState("SUCCESS");
+            });
             console.log(data);
             if(!filtrado){
                 setFiltrado(true);
             }
         }else{
             if(filtrado){
-                conexionServer(`propiedades`,setData,setState,"GET");
+                conexionServer(`propiedades`).then( response => {
+                    setData(response.data);
+                    setState("SUCCESS");
+                });
                 setFiltrado(false);
             }
         }
