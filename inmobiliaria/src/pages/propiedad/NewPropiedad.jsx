@@ -8,19 +8,9 @@ import FormChangeDatos from "../../components/FormChangeDatos";
 function NewPropiedad(){
     const navigate = useNavigate();
     const [data,setData]=useState({});
-    const [localidades,setLocalidades]=useState(null);
-    const [tipoPropiedades,setTipoPropiedades]=useState(null);
     const [state,setState]=useState("LOADING");
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(()=>{
-        conexionServer("localidades").then( response => {
-          setLocalidades(response.data);
-        });
-        conexionServer("tipos_propiedad").then( response => {
-          setTipoPropiedades(response.data);
-        });
-    },[]);
 
     async function sendData(event){
         event.preventDefault();
@@ -36,7 +26,13 @@ function NewPropiedad(){
             }else if(value==='false'){
                 datos[key]=0;
             }else if(value!==''){
-                datos[key] = value;
+                if(key == 'localidades_id'){
+                    datos["localidad_id"]=value;
+                }else if(key == 'tipos_propiedad_id'){
+                    datos["tipo_propiedad_id"]=value;
+                }else{
+                    datos[key] = value;
+                }
             }
         });
 
@@ -93,14 +89,12 @@ function NewPropiedad(){
 
             conexionServer("propiedades", "POST", datos).then( () => {
                 setState("SUCCESS");
+                alert('Ingreso de datos exitoso.');
+                navigate("/propiedad");
             }).catch( error => {
                 setErrorMessage(error);
                 setState("ERROR");
             });
-             
-            if(state==="SUCCESS"){
-                alert('Ingreso de datos exitoso.');
-            }
         } catch (err) {
             setState("ERROR");
             let errorObject;
@@ -120,11 +114,12 @@ function NewPropiedad(){
             <FormChangeDatos 
                 titulo="Agregar un nueva Propiedad" 
                 handleSubmit={sendData} 
-                params={["domicilio","localidad_id","cantidad_habitaciones","cantidad_banios"
+                params={["domicilio","cantidad_habitaciones","cantidad_banios"
                     ,"cochera","cantidad_huespedes","fecha_inicio_disponibilidad","cantidad_dias"
-                    ,"disponible","valor_noche","tipo_propiedad_id","imagen (accesible desde el navegador)","tipo_imagen"]}
+                    ,"disponible","valor_noche","imagen (accesible desde el navegador)","tipo_imagen"]}
                 state={state}
                 errorMessage={errorMessage}
+                camposDeSeleccion={["localidades","tipos_propiedad"]}
             />
         </>
     );

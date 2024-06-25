@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import conexionServer from "../utils/conexionServer";
 import '../assets/styles/InputCreacion.css';
 
-function OptionElements(content){
+function OptionElements({ param }){
     const [data,setData]=useState([]);
 
     useEffect(()=>{
-        console.log(content.param);
-        conexionServer(`${content.param}`).then((response)=>{
+        console.log(param);
+        conexionServer(`${param}`).then((response)=>{
             setData(response.data);
             console.log("SUCCESS");
         }).catch((error)=>{
@@ -17,8 +17,8 @@ function OptionElements(content){
 
     return(
         <div className="ObjectCreacion">
-            <label htmlFor="inquilino_id">Ingresar inquilino: </label>
-            <select name="inquilino_id" id="inquilino_id">
+            <label htmlFor={`${param}_id`}>Ingresar {param}: </label>
+            <select name={`${param}_id`} id={`${param}_id`}>
                 {data && data.map((dato)=>(
                     <option name={`${dato.id}`} id={`${dato.id}`} value={dato.id}>
                         {dato.nombre}
