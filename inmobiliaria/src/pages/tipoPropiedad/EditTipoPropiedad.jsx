@@ -15,7 +15,10 @@ function EditTipoPropiedad() {
     const navigate=useNavigate();
 
     useEffect(()=>{
-        conexionServer(`tipos_propiedad/${id}`, setData, setState);
+        conexionServer(`tipos_propiedad/${id}`).then( data => {
+            setData(data);
+            setState("SUCCESS");
+        });
     },[]);
 
     const handleSubmit = async (event) => {
@@ -32,11 +35,15 @@ function EditTipoPropiedad() {
 
         try {
             validarCampos(datos,validaciones);
-            conexionServer(`tipos_propiedad/${id}`, setData, setState, 'PUT', {nombre: datos.nombre});
-            if (state === "SUCCESS") {
-                alert('Tipo de propiedad actualizado exitosamente.');
-                navigate("/");
-            }  
+            conexionServer(`tipos_propiedad/${id}`, 'PUT', {nombre: datos.nombre}).then( () => {
+                    alert('Tipo de propiedad actualizado exitosamente.');
+                    navigate("/");
+                }).catch(error => {
+                    console.log(error.message);
+                    setState("ERROR");
+                    const parsedError = JSON.parse(error.message);
+                    setErrorMessage(parsedError); 
+                });
         } catch (err) {
             setState("ERROR");
             let errorObject;

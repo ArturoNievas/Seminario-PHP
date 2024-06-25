@@ -1,7 +1,7 @@
 import config from "./config";
 
-function conexionServer(endpoint,setData, setState, method = "GET", newData={}, setErrorMessage){
-    fetch(`${config.backendUrl}/${endpoint}`,{
+function conexionServer(endpoint, method = "GET", newData={}){
+    return fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{
             'Content-Type': 'application/json'
@@ -23,20 +23,6 @@ function conexionServer(endpoint,setData, setState, method = "GET", newData={}, 
                 return null;
             }
             return response.json();
-        })
-        .then(dataJson=>{
-            if (dataJson) {
-                setData(dataJson.data);
-            } else {
-                setData(null);
-            }
-            setState("SUCCESS");
-        })
-        .catch(error => {
-            setState("ERROR");
-            console.log(error.message);
-            const parsedError = JSON.parse(error.message);
-            setErrorMessage(parsedError); 
         });
 }
 
