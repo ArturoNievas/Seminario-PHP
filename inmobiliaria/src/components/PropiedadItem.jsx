@@ -8,18 +8,22 @@ import conexionServer from '../utils/conexionServer';
 //para mi no se tendria que mostrar el item entero hasta que cargue cada componente
 //el css se estropea cuando se carga la info
 //tira un par de errores en la consola, revisar
-const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, imagen }) => {
+const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleClickAdd }) => {
   const [tipoPropiedad, setTipoPropiedad] = useState("");
   const [localidad, setLocalidad] = useState("");
   const [err,setErr]=useState();
 
     useEffect(() => {
-        conexionServer(`tipos_propiedad/${propiedad.tipo_propiedad_id}`).then( response => {
-          setTipoPropiedad(response.data);
-        });
-        conexionServer(`localidades/${propiedad.localidad_id}`).then( response => {
-          setLocalidad(response.data);
-        });;
+      conexionServer(`tipos_propiedad/${propiedad.tipo_propiedad_id}`)
+      .then(data => {
+        setTipoPropiedad(data.data);
+      })
+      .catch((e) => console.log("ERROR: ",e));
+      conexionServer(`localidades/${propiedad.localidad_id}`)
+      .then(data => {
+        setLocalidad(data.data);
+      })
+      .catch((e) => console.log("ERROR: ",e));
     }, [propiedad]);
 
   return (
@@ -32,6 +36,7 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, imagen }
       <p className='title-li'>Huéspedes: {propiedad.cantidad_huespedes}</p>
       <p className='title-li'>Valor noche: {propiedad.valor_noche}</p>
       <div className='buttons'>
+        <ButtonComponent type="add" handleClick={(event) => handleClickAdd(event,`/reserva/create/${propiedad.id}`)} textContent='Agregar reserva'/>
         <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/propiedad/edit/${propiedad.id}`)} />
         <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,propiedad.id)} />
       </div>

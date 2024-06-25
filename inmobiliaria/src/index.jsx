@@ -43,7 +43,7 @@ const router = createBrowserRouter([
     element: <ReservaPage />,
   },
   {
-    path: "/reserva/create",
+    path: "/reserva/create/:id",
     element: <NewReserva />,
   },
   {

@@ -55,6 +55,7 @@ function PropiedadPage() {
       propiedad={propiedad}
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
+      handleClickAdd={handleClickCreate}
     />
   );
 

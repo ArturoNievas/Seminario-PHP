@@ -21,6 +21,7 @@ function EditPropiedad() {
             setData(data.data);
             setState("SUCCESS");
           });
+        console.log(data);
     },[]);
 
     const handleSubmit = async (event) => {

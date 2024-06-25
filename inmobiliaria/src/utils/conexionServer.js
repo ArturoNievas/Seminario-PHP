@@ -1,9 +1,6 @@
 import config from "./config";
 
 function conexionServer(endpoint, method = "GET", newData={}){
-    console.log(`${config.backendUrl}/${endpoint}`);
-    console.log("newData: ",newData);
-    console.log((method === "GET" && Object.keys(newData).length === 0) ? null : JSON.stringify(newData));
     return fetch(`${config.backendUrl}/${endpoint}`,{
         method: method,
         headers:{
@@ -12,7 +9,6 @@ function conexionServer(endpoint, method = "GET", newData={}){
         body: (method === "GET" && Object.keys(newData).length === 0) ? null : JSON.stringify(newData),
     })
         .then(response=>{
-            console.log("llegue");
             if(!response.ok){
                 return response.text().then(text => {
                     try {
@@ -26,8 +22,6 @@ function conexionServer(endpoint, method = "GET", newData={}){
             if (response.status === 204) {
                 return null;
             }
-            console.log("hola");
-            console.log("respuesta: ",response);
             return response.json();
         });
 }

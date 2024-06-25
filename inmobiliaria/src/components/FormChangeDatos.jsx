@@ -4,8 +4,9 @@ import { Oval } from "react-loader-spinner";
 import InputCreacionElemento from './InputCreacionElemento';
 import '../assets/styles/FormCreacion.css';
 import ButtonComponent from "./ButtonComponent";
+import OptionElements from "./OptionElements";
 
-function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, data = null }) {
+function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, data = null, camposDeSeleccion = null }) {
     return (
         <>
             <HeaderComponent />
@@ -26,6 +27,9 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
                         <form className="formCreacion" onSubmit={(event) => handleSubmit(event)}>
                             {params.map((param, index) => (
                                 <InputCreacionElemento key={index} param={param} data={data} />
+                            ))}
+                            {camposDeSeleccion.map((param, index) => (
+                                <OptionElements key={index} param={param} />
                             ))}
                             <ButtonComponent type="add"/>
                         </form>

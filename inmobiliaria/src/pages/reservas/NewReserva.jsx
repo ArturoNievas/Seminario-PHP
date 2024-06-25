@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import validarCampos from "../../utils/validarCampos";
 import conexionServer from "../../utils/conexionServer";
 import FormChangeDatos from "../../components/FormChangeDatos";
@@ -7,9 +7,16 @@ import FormChangeDatos from "../../components/FormChangeDatos";
 //hay variables que sobran me parece
 function NewReserva(){
     const navigate = useNavigate();
+    const { id } = useParams();
     const [data,setData]=useState({});
     const [state,setState]=useState("LOADING");
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(()=>{
+        console.log("hola");
+    },[]);
+
+console.log(id);
 
     async function sendData(event){
         event.preventDefault();
@@ -18,7 +25,7 @@ function NewReserva(){
 
         let formData = new FormData(event.target);
 
-        let datos = {};
+        let datos={ propiedad_id: id };
         formData.forEach((value, key) => {
             if(value==='true'){
                 datos[key]=1;
@@ -73,15 +80,15 @@ function NewReserva(){
         }
     }
 
-
     return(
         <>
             <FormChangeDatos 
-                titulo="Agregar un nueva Propiedad" 
+                titulo="Agregar una nueva Reserva" 
                 handleSubmit={sendData} 
-                params={["propiedad_id","inquilino_id","fecha_desde","cantidad_noches"]}
+                params={["fecha_desde","cantidad_noches"]}
                 state={state}
                 errorMessage={errorMessage}
+                camposDeSeleccion={["inquilino"]}
             />
         </>
     );

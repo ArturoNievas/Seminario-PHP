@@ -8,10 +8,10 @@ function FiltradoComponent({ data, setData, setState }) {
     const [localidades,setLocalidades]=useState([]);
 
     useEffect(()=>{
-        conexionServer(`localidades`).then( response => {
+        conexionServer("localidades").then( response => {
             setLocalidades(response.data);
             setState("SUCCESS");
-        });
+          });
     },[]);
 
     //falta validar los campos
