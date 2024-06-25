@@ -51,11 +51,15 @@ function NewReserva(){
         try {
             validarCampos(datos,validaciones);
 
-            conexionServer("reservas", setData, setState, "POST", datos);
-            if(state==="SUCCESS"){
-                alert('Reserva creada exitosamente.');
+            conexionServer("reservas", "POST", datos).then(() => {
+                alert('Ingreso de datos exitoso.');
                 navigate("/reserva");
-            }
+            }).catch(error => {
+                console.log(error.message);
+                setState("ERROR");
+                const parsedError = JSON.parse(error.message);
+                setErrorMessage(parsedError); 
+            });
         }catch (err) {
             setState("ERROR");
             let errorObject;

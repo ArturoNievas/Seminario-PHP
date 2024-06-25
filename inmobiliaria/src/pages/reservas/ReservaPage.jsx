@@ -1,3 +1,4 @@
+// ReservaPage.js
 import React, { useEffect, useState } from 'react';
 import HeaderComponent from '../../components/HeaderComponent';
 import FooterComponent from '../../components/FooterComponent';
@@ -7,20 +8,23 @@ import UlComponent from '../../components/UlComponent';
 import { useNavigate } from 'react-router-dom';
 import ButtonComponent from '../../components/ButtonComponent';
 import ReservaItem from '../../components/ReservaItem';
-//OBSERVACION: yo cambiaria el state solo cuando 
-//todos los datos esten completamente cargados
-//(nos evitamoos un error que salta cuando intentas borrar una propiedad 
-//sin que carguen todos sus datos por completo)
-function ReservaPage() {
-  const [data,setData]=useState(null);
-  const [state,setState]=useState("LOADING");
-  const [refresh, setRefresh] = useState(false);
-  const navigate=useNavigate();
 
-  useEffect(()=>{
+function ReservaPage() {
+  const [data, setData] = useState(null);
+  const [state, setState] = useState("LOADING");
+  const [refresh, setRefresh] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
     setState("LOADING");
-    conexionServer("reservas",setData,setState);
-  },[refresh]);
+    conexionServer('reservas')
+      .then(data => {
+        console.log("Data", data);
+        setData(data.data);
+        setState("SUCCESS");
+      })
+      .catch(() => setState("ERROR"));
+  }, [refresh]);
 
   function handleClickCreate(event, url) {
     event.preventDefault();
@@ -32,20 +36,24 @@ function ReservaPage() {
     navigate(url);
   };
 
-  //NO FUNCIONA HASTA QUE TERMINA DE CARGAR TODO EL COMPONENTE
-  //tira state===ERROR
-  function handleClickDelete(event, id ) {
+  function handleClickDelete(event, id) {
     event.preventDefault();
     const confirmDelete = window.confirm('¿Estás seguro de eliminar esta reserva?');
     if (confirmDelete) {
-      conexionServer(`reservas/${id}`, setData, setState, "DELETE");
-      alert("Reserva eliminada");
-      setRefresh(!refresh);
+      conexionServer(`reservas/${id}`, "DELETE")
+        .then(() => {
+          alert("reserva eliminada");
+          setRefresh(!refresh);
+        })
+        .catch(error => {
+          const parsedError = JSON.parse(error.message);
+          alert(parsedError.id);
+        });
     }
   }
 
   const childrenItem = (reserva) => (
-    <ReservaItem 
+    <ReservaItem
       reserva={reserva}
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
@@ -54,28 +62,28 @@ function ReservaPage() {
 
   return (
     <>
-      <HeaderComponent/>
+      <HeaderComponent />
       <main>
-        {state==="SUCCESS" ? (
+        {state === "SUCCESS" ? (
           <div className="div-main">
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
-            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/reserva/create`} textContent='Agregar nueva Reserva'/>
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/reserva/create`} textContent='Agregar nueva Reserva' />
           </div>
-        ) : state==="LOADING" ? (
+        ) : state === "LOADING" ? (
           <div className="loading-oval-container">
-              <Oval
-                  className="loading-oval"
-                  visible={true}
-                  color="var(--color-oval)"
-                  secondaryColor="var(--color-oval)"
-                  ariaLabel="oval-loading"
-              />
+            <Oval
+              className="loading-oval"
+              visible={true}
+              color="var(--color-oval)"
+              secondaryColor="var(--color-oval)"
+              ariaLabel="oval-loading"
+            />
           </div>
         ) : (
-            <p>Error</p>
+          <p>Error</p>
         )}
       </main>
-      <FooterComponent/>
+      <FooterComponent />
     </>
   );
 }

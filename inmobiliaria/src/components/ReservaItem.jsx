@@ -13,8 +13,16 @@ const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete }) => {
   const [err,setErr]=useState();
 
     useEffect(() => {
-        conexionServer(`propiedades/${reserva.propiedad_id}`,setPropiedad,setErr);
-        conexionServer(`inquilinos/${reserva.inquilino_id}`,setInquilino,setErr);
+        conexionServer(`propiedades/${reserva.propiedad_id}`)
+          .then(data => {
+            setPropiedad(data.data);
+          })
+          .catch((e) => console.log("ERROR: ",e));
+        conexionServer(`inquilinos/${reserva.inquilino_id}`)
+        .then(data => {
+          setInquilino(data.data);
+        })
+        .catch((e) => console.log("ERROR: ",e));
     }, [reserva]);
 
   return (

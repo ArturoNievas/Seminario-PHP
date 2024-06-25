@@ -16,7 +16,11 @@ function EditPropiedad() {
     const navigate=useNavigate();
 
     useEffect(()=>{
-        conexionServer(`reservas/${id}`, setData, setState);
+        conexionServer(`reservas/${id}`).then(data => {
+            console.log("Data", data);
+            setData(data.data);
+            setState("SUCCESS");
+          });
     },[]);
 
     const handleSubmit = async (event) => {
@@ -56,11 +60,17 @@ function EditPropiedad() {
         try {
             validarCampos(datos,validaciones);
 
-            conexionServer(`reservas/${id}`, setData, setState, 'PUT', datos);
-            if(state==="SUCCESS"){
-                alert('Reserva actualizada exitosamente.');
-                navigate("/reserva");
-            }
+            //tira error al hacer el .json() en la conexion pero se actualiza
+            conexionServer(`reservas/${id}`, "PUT", datos).then(() => {
+                alert('Reserva actualizada correctamente.');
+                navigate("/reservas");
+            }).catch(error => {
+                console.log("todo mal");
+                console.log(error.message);
+                setState("ERROR");
+                //const parsedError = JSON.parse(error.message);
+                //setErrorMessage(parsedError); 
+            });
         }catch (err) {
             setState("ERROR");
             let errorObject;
