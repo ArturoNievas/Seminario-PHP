@@ -16,7 +16,7 @@ function EditTipoPropiedad() {
 
     useEffect(()=>{
         conexionServer(`tipos_propiedad/${id}`).then( data => {
-            setData(data);
+            setData(data.data);
             setState("SUCCESS");
         });
     },[]);

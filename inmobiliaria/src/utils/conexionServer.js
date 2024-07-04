@@ -22,6 +22,7 @@ function conexionServer(endpoint, method = "GET", newData={}){
             if (response.status === 204) {
                 return null;
             }
+            console.log(response);
             return response.json();
         });
 }

@@ -29,7 +29,7 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
                                 <InputCreacionElemento key={index} param={param} data={data} />
                             ))}
                             {camposDeSeleccion && camposDeSeleccion.map((param, index) => (
-                                <OptionElements key={index} param={param} />
+                                <OptionElements key={index} param={param} datos={data}/>
                             ))}
                             <ButtonComponent type="add"/>
                         </form>
