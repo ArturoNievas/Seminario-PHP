@@ -30,11 +30,12 @@ function EditPropiedad() {
         event.preventDefault();
         let formData = new FormData(event.target);
 
+
         let datos = {};
         formData.forEach((value, key) => {
-            if(value==='true'){
+            if(value==='true' || value==='1'){
                 datos[key]=1;
-            }else if(value==='false'){
+            }else if(value==='false' || value==='0'){
                 datos[key]=0;
             }else if(value!==''){
                 if(key == 'localidades_id'){
@@ -132,7 +133,7 @@ function EditPropiedad() {
                 state={state}
                 errorMessage={errorMessage}
                 data={data}
-                camposDeSeleccion={["localidades","tipos_propiedad"]}
+                camposDeSeleccion={["localidad_id","tipo_propiedad_id"]}
             />
         </>
     );

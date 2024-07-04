@@ -1,7 +1,6 @@
 import '../assets/styles/InputCreacion.css';
 
 function input({ param, data }){
-
     return (
         <div className='ObjectCreacion'>
             <div className='LabelCreacion'>
