@@ -8,7 +8,7 @@ import conexionServer from '../utils/conexionServer';
 //para mi no se tendria que mostrar el item entero hasta que cargue cada componente
 //el css se estropea cuando se carga la info
 //tira un par de errores en la consola, revisar
-const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleClickAdd, localidades, tiposPropiedad }) => {
+const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleClickAdd, handleClickDetail, localidades, tiposPropiedad }) => {
   const [tipoPropiedad, setTipoPropiedad] = useState("");
   const [localidad, setLocalidad] = useState("");
   
@@ -41,6 +41,7 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleCl
         <ButtonComponent type="add" handleClick={(event) => handleClickAdd(event,`/reserva/create/${propiedad.id}`)} textContent='Agregar reserva'/>
         <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/propiedad/edit/${propiedad.id}`)} />
         <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,propiedad.id)} />
+        <ButtonComponent type="detail" handleClick={(event) => handleClickDetail(event,`/propiedad/detail/${propiedad.id}`)} />
       </div>
     </li>
   );

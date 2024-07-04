@@ -1,0 +1,25 @@
+@import url(root.css);
+
+.details-main{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-container{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: solid 2px;
+    border-color: var(--color-primary);
+    border-radius: 20px;
+}
+
+.details-item{
+    display:flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+}

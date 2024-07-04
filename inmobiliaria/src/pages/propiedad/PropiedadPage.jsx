@@ -54,6 +54,11 @@ function PropiedadPage() {
     navigate(url);
   };
 
+  function handleClickDetail(event, url) {
+    event.preventDefault();
+    navigate(url);
+  };
+
   //NO FUNCIONA HASTA QUE TERMINA DE CARGAR TODO EL COMPONENTE
   //tira state===ERROR
   function handleClickDelete(event, id ) {
@@ -76,6 +81,7 @@ function PropiedadPage() {
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
       handleClickAdd={handleClickCreate}
+      handleClickDetail={handleClickDetail}
       localidades={localidades}
       tiposPropiedad={tiposPropiedad}
     />

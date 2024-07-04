@@ -4,7 +4,8 @@ function ButtonComponent({ type , handleClick=null, params, textContent='', id='
     const buttonText = {
         delete: "Eliminar",
         edit: "Editar",
-        add: "Agregar"
+        add: "Agregar",
+        detail: "Detalle"
     }
 
     function manejadorClick(event){
