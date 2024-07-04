@@ -45,8 +45,11 @@ function PropiedadPage() {
     if (confirmDelete) {
       conexionServer(`propiedades/${id}`, "DELETE").then( () => {
         alert("Propiedad eliminada");
-        setRefresh(!refresh);
-      });
+        setData(data.filter(x => x.id !== id));
+      }).catch(error => {
+        const parsedError = JSON.parse(error.message);
+        alert(parsedError.id);
+    });
     }
   }
 

@@ -38,7 +38,7 @@ function ReservaPage() {
       conexionServer(`reservas/${id}`, "DELETE")
         .then(() => {
           alert("reserva eliminada");
-          setRefresh(!refresh);
+          setData(data.filter(x => x.id !== id));
         })
         .catch(error => {
           const parsedError = JSON.parse(error.message);

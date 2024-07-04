@@ -46,7 +46,7 @@ function TipoPropiedadPage() {
     if (confirmDelete) {
       conexionServer(`tipos_propiedad/${id}`, "DELETE").then(() => {
         alert("Tipo de propiedad eliminado");
-        setRefresh(!refresh);
+        setData(data.filter(x => x.id !== id));
       }).catch(error => {
         const parsedError = JSON.parse(error.message);
         alert(parsedError.id);
