@@ -16,15 +16,22 @@ function PropiedadPage() {
   const [data,setData]=useState(null);
   const [state,setState]=useState("LOADING");
   const navigate=useNavigate();
-  const [refresh, setRefresh] = useState(false);
+  const [localidades,setLocalidades]=useState(null);
+  const [tiposPropiedad,setTiposPropiedad]=useState(null);
 
   useEffect(()=>{
     setState("LOADING");
     conexionServer("propiedades").then( response => {
       setData(response.data);
       setState("SUCCESS");
-    });  
-  },[refresh]);
+    });
+    conexionServer("localidades").then( response => {
+      setLocalidades(response.data);
+    });
+    conexionServer("tipos_propiedad").then( response => {
+      setTiposPropiedad(response.data);
+    });
+  },[]);
 
 
   function handleClickCreate(event, url) {
@@ -59,6 +66,8 @@ function PropiedadPage() {
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
       handleClickAdd={handleClickCreate}
+      localidades={localidades}
+      tiposPropiedad={tiposPropiedad}
     />
   );
 
@@ -72,7 +81,7 @@ function PropiedadPage() {
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
             <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`} textContent='Agregar nueva Propiedad'/>
           </div>
-        ) : state==="LOADING" ? (
+        ) : state==="LOADING" || state==="Loading" ? (
           <div className="loading-oval-container">
               <Oval
                   className="loading-oval"

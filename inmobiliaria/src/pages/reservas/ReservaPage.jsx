@@ -14,17 +14,23 @@ function ReservaPage() {
   const [state, setState] = useState("LOADING");
   const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
+  const [propiedades,setPropiedades] = useState(null);
+  const [inquilinos,setInquilinos] = useState(null);
 
   useEffect(() => {
     setState("LOADING");
-    conexionServer('reservas')
-      .then(data => {
+    conexionServer('reservas').then(data => {
         console.log("Data", data);
         setData(data.data);
         setState("SUCCESS");
       })
-      .catch(() => setState("ERROR"));
-  }, [refresh]);
+    conexionServer("propiedades").then( response => {
+      setPropiedades(response.data);
+    });
+    conexionServer("inquilinos").then( response => {
+      setInquilinos(response.data);
+    });
+  }, []);
 
   function handleClickEdit(event, url) {
     event.preventDefault();
@@ -52,6 +58,8 @@ function ReservaPage() {
       reserva={reserva}
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
+      propiedades={propiedades}
+      inquilinos={inquilinos}
     />
   );
 

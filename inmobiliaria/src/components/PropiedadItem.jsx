@@ -8,23 +8,25 @@ import conexionServer from '../utils/conexionServer';
 //para mi no se tendria que mostrar el item entero hasta que cargue cada componente
 //el css se estropea cuando se carga la info
 //tira un par de errores en la consola, revisar
-const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleClickAdd }) => {
+const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleClickAdd, localidades, tiposPropiedad }) => {
   const [tipoPropiedad, setTipoPropiedad] = useState("");
   const [localidad, setLocalidad] = useState("");
-  const [err,setErr]=useState();
+  
+  if(tiposPropiedad!=null && tipoPropiedad==""){
+    let i=0;
+    while(i<tiposPropiedad.length && tiposPropiedad[i].id!=propiedad.tipo_propiedad_id)i++
+    if(i<tiposPropiedad.length){
+      setTipoPropiedad(tiposPropiedad[i])
+    }
+  }
 
-    useEffect(() => {
-      conexionServer(`tipos_propiedad/${propiedad.tipo_propiedad_id}`)
-      .then(data => {
-        setTipoPropiedad(data.data);
-      })
-      .catch((e) => console.log("ERROR: ",e));
-      conexionServer(`localidades/${propiedad.localidad_id}`)
-      .then(data => {
-        setLocalidad(data.data);
-      })
-      .catch((e) => console.log("ERROR: ",e));
-    }, [propiedad]);
+  if(localidades!=null && localidad==""){
+    let i=0;
+    while(i<localidades.length && localidades[i].id!=propiedad.localidad_id)i++
+    if(i<localidades.length){
+      setLocalidad(localidades[i])
+    }
+  }
 
   return (
     <li className="list-item" key={propiedad.id}>

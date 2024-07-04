@@ -7,11 +7,27 @@ import '../assets/styles/ListitemComponent.css';
 //para mi no se tendria que mostrar el item entero hasta que cargue cada componente
 //el css se estropea cuando se carga la info
 //tira un par de errores en la consola, revisar
-const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete }) => {
+const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete, propiedades, inquilinos }) => {
   const [propiedad, setPropiedad] = useState("");
   const [inquilino, setInquilino] = useState("");
-  const [err,setErr]=useState();
+  
+  if(propiedades!=null && propiedad==""){
+    let i=0;
+    while(i<propiedades.length && propiedades[i].id!=reserva.propiedad_id)i++
+    if(i<propiedades.length){
+      setPropiedad(propiedades[i])
+    }
+  }
 
+  if(inquilinos!=null && inquilino==""){
+    let i=0;
+    while(i<inquilinos.length && inquilinos[i].id!=reserva.inquilino_id)i++
+    if(i<inquilinos.length){
+      setInquilino(inquilinos[i])
+    }
+  }
+
+  /*
     useEffect(() => {
         conexionServer(`propiedades/${reserva.propiedad_id}`)
           .then(data => {
@@ -24,6 +40,7 @@ const ReservaItem = ({ reserva, handleClickEdit, handleClickDelete }) => {
         })
         .catch((e) => console.log("ERROR: ",e));
     }, [reserva]);
+  */
 
   return (
     <li className="list-item" key={reserva.id}>
