@@ -18,11 +18,21 @@ function PropiedadPage() {
   const navigate=useNavigate();
   const [localidades,setLocalidades]=useState(null);
   const [tiposPropiedad,setTiposPropiedad]=useState(null);
+  const [idsFiltrado,setIdsFiltrado]=useState([]);
 
   useEffect(()=>{
     setState("LOADING");
     conexionServer("propiedades").then( response => {
-      setData(response.data);
+      let datos=response.data;
+      let ids=[];
+
+      datos.forEach(element => {
+          ids.push(element.id);
+      });
+
+      console.log("ids: ",ids);
+      setIdsFiltrado(ids);
+      setData(datos);
       setState("SUCCESS");
     });
     conexionServer("localidades").then( response => {
@@ -77,8 +87,8 @@ function PropiedadPage() {
       <main>
         {state==="SUCCESS" ? (
           <div className="div-main">
-            <FiltradoComponent data={data} setData={setData} setState={setState}/>
-            <UlComponent data={data} state={state} childrenItem={childrenItem} />
+            <FiltradoComponent data={data} setState={setState} setIds={setIdsFiltrado}/>
+            <UlComponent data={data} state={state} childrenItem={childrenItem} filtro={idsFiltrado}/>
             <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`} textContent='Agregar nueva Propiedad'/>
           </div>
         ) : state==="LOADING" || state==="Loading" ? (

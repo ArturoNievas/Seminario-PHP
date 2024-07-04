@@ -17,7 +17,6 @@ function TipoPropiedadPage() {
   useEffect(() => {
     setState("LOADING");
     conexionServer("tipos_propiedad").then(data => {
-      console.log("Data", data);
       setData(data.data);
       setState("SUCCESS");
     });

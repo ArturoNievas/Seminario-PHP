@@ -114,7 +114,6 @@ function propiedadDisponible($connection,$propiedad_id,$inicioIntervalo,$duracio
                   AND '$fecha_fin' > p.fecha_inicio_disponibilidad";
 
     // Si se proporciona un ID de reserva, excluimos esa reserva de la verificación de disponibilidad
-    echo $reserva_id;
     if ($reserva_id !== null) {
         $query = $query . " AND r.id <> '$reserva_id'";
     }

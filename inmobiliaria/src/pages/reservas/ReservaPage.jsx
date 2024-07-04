@@ -20,7 +20,6 @@ function ReservaPage() {
   useEffect(() => {
     setState("LOADING");
     conexionServer('reservas').then(data => {
-        console.log("Data", data);
         setData(data.data);
         setState("SUCCESS");
       })
