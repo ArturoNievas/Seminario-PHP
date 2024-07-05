@@ -71,7 +71,7 @@ function EditPropiedad() {
             conexionServer(`reservas/${id}`, "PUT", datos).then((response) => {
                 alert('Reserva actualizada correctamente.');
                 console.log(response);
-                navigate("/reservas");
+                navigate("/reserva");
             }).catch(error => {
                 console.log("todo mal");
                 console.log(error.message);

@@ -4,18 +4,22 @@ import validarCampos from "../../utils/validarCampos";
 import conexionServer from "../../utils/conexionServer";
 import FormChangeDatos from "../../components/FormChangeDatos";
 
-//hay variables que sobran me parece
 function NewReserva(){
     const navigate = useNavigate();
     const { id } = useParams();
     const [data,setData]=useState({});
-    const [state,setState]=useState("LOADING");
+    const [state,setState]=useState();
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(()=>{
+        conexionServer(`propiedades/${id}`).then(event=>{
+            setData(event.data);
+            console.log(event.data)
+        })
+    },[]);
 
     async function sendData(event){
         event.preventDefault();
-
-        setState("LOADING");
 
         let formData = new FormData(event.target);
 
@@ -81,10 +85,11 @@ function NewReserva(){
             <FormChangeDatos 
                 titulo="Agregar una nueva Reserva" 
                 handleSubmit={sendData} 
-                params={["fecha_desde","cantidad_noches"]}
+                params={["fecha_inicio_disponibilidad","cantidad_noches"]}
                 state={state}
+                data={data}
                 errorMessage={errorMessage}
-                camposDeSeleccion={["inquilinos"]}
+                camposDeSeleccion={["inquilino_id"]}
             />
         </>
     );
