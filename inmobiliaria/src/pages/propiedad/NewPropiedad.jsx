@@ -8,7 +8,7 @@ import FormChangeDatos from "../../components/FormChangeDatos";
 function NewPropiedad(){
     const navigate = useNavigate();
     const [data,setData]=useState({});
-    const [state,setState]=useState("LOADING");
+    const [state,setState]=useState();
     const [errorMessage, setErrorMessage] = useState("");
 
 
@@ -108,7 +108,6 @@ function NewPropiedad(){
         }
     }
 
-
     return(
         <>
             <FormChangeDatos 
@@ -119,7 +118,7 @@ function NewPropiedad(){
                     ,"disponible","valor_noche","imagen (accesible desde el navegador)","tipo_imagen"]}
                 state={state}
                 errorMessage={errorMessage}
-                camposDeSeleccion={["localidades","tipos_propiedad"]}
+                camposDeSeleccion={["localidad_id","tipo_propiedad_id"]}
             />
         </>
     );

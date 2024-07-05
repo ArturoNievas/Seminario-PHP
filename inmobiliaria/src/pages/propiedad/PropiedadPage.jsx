@@ -94,8 +94,8 @@ function PropiedadPage() {
         {state==="SUCCESS" ? (
           <div className="div-main">
             <FiltradoComponent data={data} setState={setState} setIds={setIdsFiltrado}/>
-            <UlComponent data={data} state={state} childrenItem={childrenItem} filtro={idsFiltrado}/>
             <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`} textContent='Agregar nueva Propiedad'/>
+            <UlComponent data={data} state={state} childrenItem={childrenItem} filtro={idsFiltrado}/>
           </div>
         ) : state==="LOADING" || state==="Loading" ? (
           <div className="loading-oval-container">

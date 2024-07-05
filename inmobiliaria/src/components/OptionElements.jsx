@@ -5,8 +5,6 @@ import '../assets/styles/InputCreacion.css';
 function OptionElements({ param, datos }){
     const [data,setData]=useState([]);
 
-    console.log(param)
-
     useEffect(()=>{
         let url=param;
         if(param==='inquilino_id'){
@@ -18,6 +16,7 @@ function OptionElements({ param, datos }){
         }else if(param == 'tipo_propiedad_id'){
             url='tipos_propiedad';
         }
+
         conexionServer(`${url}`).then((response)=>{
             setData(response.data);
             console.log("SUCCESS");
@@ -30,9 +29,12 @@ function OptionElements({ param, datos }){
         <div className="ObjectCreacion">
             <label htmlFor={`${param}`}>Ingresar {param}: </label>
             <select name={`${param}`} id={`${param}`}>
+                <option value="">
+                    Seleccionar {param=='localidad_id'?'localidad':param=='tipo_propiedad_id'?'tipo de propiedad':''}
+                </option>
                 {data && data.map((dato)=>(
                     <>
-                        {datos[param]===dato.id?(
+                        { datos && datos[param] && datos[param]===dato.id?(
                             <option name={`${dato.id}`} id={`${dato.id}`} value={dato.id} selected> 
                                 {dato.nombre !== undefined ? dato.nombre : dato.domicilio}
                             </option>

@@ -7,13 +7,31 @@ function input({ param, data }){
                 <label htmlFor={`${param}`}>{`Ingresar ${param}:`}</label>
             </div>
             <div className="InputCreacion">
-                <input 
-                    type="text" 
-                    name={`${param}`} 
-                    id={`${param}`} 
-                    defaultValue={data ? data[param] : ''}
-                    placeholder={`ingresar ${param}`}
-                />
+                { param=='fecha_inicio_disponibilidad' || param=='fecha_desde' ?(
+                    <input 
+                        type="date" 
+                        name={`${param}`} 
+                        id={`${param}`} 
+                        defaultValue={data ? data[param] : ''}
+                        placeholder={`ingresar ${param}`}
+                    />
+                ): param=='imagen' ?(
+                    <input 
+                        type="file" 
+                        name={`${param}`} 
+                        id={`${param}`} 
+                        defaultValue={data ? data[param] : ''}
+                        placeholder={`ingresar ${param}`}
+                    />
+                ) : (
+                    <input 
+                        type="text" 
+                        name={`${param}`} 
+                        id={`${param}`} 
+                        defaultValue={data ? data[param] : ''}
+                        placeholder={`ingresar ${param}`}
+                    />
+                )}
             </div>
         </div>
     );

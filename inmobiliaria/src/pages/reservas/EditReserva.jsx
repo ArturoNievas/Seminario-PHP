@@ -101,7 +101,7 @@ function EditPropiedad() {
                 state={state}
                 errorMessage={errorMessage}
                 data={data}
-                camposDeSeleccion={["inquilinos","propiedades"]}
+                camposDeSeleccion={["inquilino_id","propiedad_id"]}
             />
         </>
     );
