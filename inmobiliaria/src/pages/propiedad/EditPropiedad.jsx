@@ -102,10 +102,16 @@ function EditPropiedad() {
             conexionServer(`propiedades/${id}`, "PUT", datos).then(() => {
                 alert('Propiedad actualizada exitosamente.');
                 navigate("/propiedad");
-            }).catch(error => {
-                console.log("todo mal");
-                console.log(error.message);
+            }).catch(err => {
                 setState("ERROR");
+                let errorObject;
+                try {
+                    errorObject = JSON.parse(err.message);
+                } catch (parseError) {
+                    errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
+                }
+
+                setErrorMessage(errorObject);
                 //const parsedError = JSON.parse(error.message);
                 //setErrorMessage(parsedError); 
             });

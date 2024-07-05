@@ -6,24 +6,15 @@ import FormChangeDatos from "../../components/FormChangeDatos";
 
 function NewReserva(){
     const navigate = useNavigate();
-    const { id } = useParams();
-    const [data,setData]=useState({});
     const [state,setState]=useState();
-    const [errorMessage, setErrorMessage] = useState("");
-
-    useEffect(()=>{
-        conexionServer(`propiedades/${id}`).then(event=>{
-            setData(event.data);
-            console.log(event.data)
-        })
-    },[]);
+    const [errorMessage, setErrorMessage] = useState(""); 
 
     async function sendData(event){
         event.preventDefault();
 
         let formData = new FormData(event.target);
 
-        let datos={ propiedad_id: id };
+        let datos={};
         formData.forEach((value, key) => {
             if(value==='true'){
                 datos[key]=1;
@@ -33,6 +24,8 @@ function NewReserva(){
                 datos[key] = value;
             }
         });
+
+        console.log("holaa");
 
         let validaciones = { 
             'propiedad_id': {
@@ -54,21 +47,28 @@ function NewReserva(){
         };
 
         try {
-            
+            console.log("pincho?")
             validarCampos(datos,validaciones);
+            console.log("pase las validaciones")
 
             conexionServer("reservas", "POST", datos).then(() => {
                 alert('Ingreso de datos exitoso.');
                 navigate("/reserva");
-            }).catch(error => {
-                console.log(error.message);
+            }).catch(err => {
                 setState("ERROR");
-                const parsedError = JSON.parse(error.message);
-                setErrorMessage(parsedError); 
+                let errorObject;
+                try {
+                    errorObject = JSON.parse(err.message);
+                } catch (parseError) {
+                    errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
+                }
+
+                setErrorMessage(errorObject);
             });
             
         }catch (err) {
             setState("ERROR");
+            console.log(err);
             let errorObject;
             try {
                 errorObject = JSON.parse(err.message);
@@ -80,16 +80,18 @@ function NewReserva(){
         }
     }
 
+    //si cambio el inquilino_id por inquilinos el select funciona pero 
+    //aca no me saltan los errores porq para que salte tendria que ser el campo
+    // === inquilino_id y es inquilinos
     return(
         <>
             <FormChangeDatos 
                 titulo="Agregar una nueva Reserva" 
                 handleSubmit={sendData} 
-                params={["fecha_inicio_disponibilidad","cantidad_noches"]}
+                params={["fecha_desde","cantidad_noches"]}
                 state={state}
-                data={data}
                 errorMessage={errorMessage}
-                camposDeSeleccion={["inquilino_id"]}
+                camposDeSeleccion={["inquilino_id","propiedad_id"]}
             />
         </>
     );

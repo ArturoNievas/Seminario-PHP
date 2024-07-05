@@ -48,6 +48,11 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
                             <ButtonComponent type="add"/>
                         </form>
                     </div>
+                    {errorMessage && errorMessage['message'] && (
+                        <div style={{ color: 'red' }}>
+                            <p>{`${errorMessage['message']}`}</p>
+                        </div>
+                    )}
                 </main>
             )}
             <FooterComponent />

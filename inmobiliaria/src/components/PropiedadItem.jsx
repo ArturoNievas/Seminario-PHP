@@ -38,7 +38,6 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleCl
       <p className='title-li'>Huéspedes: {propiedad.cantidad_huespedes}</p>
       <p className='title-li'>Valor noche: {propiedad.valor_noche}</p>
       <div className='buttons'>
-        <ButtonComponent type="add" handleClick={(event) => handleClickAdd(event,`/reserva/create/${propiedad.id}`)} textContent='Agregar reserva'/>
         <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/propiedad/edit/${propiedad.id}`)} />
         <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,propiedad.id)} />
         <ButtonComponent type="detail" handleClick={(event) => handleClickDetail(event,`/propiedad/detail/${propiedad.id}`)} />

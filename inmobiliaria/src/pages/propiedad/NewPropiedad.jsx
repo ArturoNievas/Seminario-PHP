@@ -91,9 +91,16 @@ function NewPropiedad(){
                 setState("SUCCESS");
                 alert('Ingreso de datos exitoso.');
                 navigate("/propiedad");
-            }).catch( error => {
-                setErrorMessage(error);
+            }).catch( err => {
                 setState("ERROR");
+                let errorObject;
+                try {
+                    errorObject = JSON.parse(err.message);
+                } catch (parseError) {
+                    errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
+                }
+
+                setErrorMessage(errorObject);
             });
         } catch (err) {
             setState("ERROR");

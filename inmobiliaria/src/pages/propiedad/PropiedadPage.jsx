@@ -80,7 +80,6 @@ function PropiedadPage() {
       propiedad={propiedad}
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
-      handleClickAdd={handleClickCreate}
       handleClickDetail={handleClickDetail}
       localidades={localidades}
       tiposPropiedad={tiposPropiedad}

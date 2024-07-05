@@ -31,6 +31,11 @@ function ReservaPage() {
     });
   }, []);
 
+  function handleClickCreate(event, url) {
+    event.preventDefault();
+    navigate(url);
+  };
+
   function handleClickEdit(event, url) {
     event.preventDefault();
     navigate(url);
@@ -68,6 +73,7 @@ function ReservaPage() {
       <main>
         {state === "SUCCESS" ? (
           <div className="div-main">
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/reserva/create`} textContent='Agregar nueva Reserva'/>
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
           </div>
         ) : state === "LOADING" ? (

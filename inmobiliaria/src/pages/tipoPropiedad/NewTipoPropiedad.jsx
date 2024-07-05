@@ -33,11 +33,16 @@ function NewTipoPropiedad(){
             conexionServer("tipos_propiedad", "POST", datos, setErrorMessage).then(() => {
                     alert('Ingreso de datos exitoso.');
                     navigate("/");
-                }).catch(error => {
-                    console.log(error.message);
+                }).catch(err => {
                     setState("ERROR");
-                    const parsedError = JSON.parse(error.message);
-                    setErrorMessage(parsedError); 
+                    let errorObject;
+                    try {
+                        errorObject = JSON.parse(err.message);
+                    } catch (parseError) {
+                        errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
+                    }
+
+                    setErrorMessage(errorObject);
                 });
         } catch (err) {
             setState("ERROR");

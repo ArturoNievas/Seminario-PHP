@@ -17,20 +17,53 @@ function OptionElements({ param, datos }){
             url='tipos_propiedad';
         }
 
+        //ineficiente, mejorar
         conexionServer(`${url}`).then((response)=>{
-            setData(response.data);
+            let datos=response.data;
+            if(url=='propiedades'){
+                let arr=[];
+                datos.forEach(element => {
+                    if(Number(element.disponible)==1){
+                        arr.push(element);
+                    }
+                });
+                setData(arr);
+            }else if(url=='inquilinos'){
+                let arr=[];
+                datos.forEach(element => {
+                    if(Number(element.activo)==1){
+                        arr.push(element);
+                    }
+                });
+                setData(arr);
+            }else{
+                setData(datos);
+            }
             console.log("SUCCESS");
         }).catch((error)=>{
             console.log(error);
         });
     },[]);
 
+    function renderSwitch(param){
+        switch(param){
+            case 'localidad_id':
+                return 'localidad';
+            case 'tipo_propiedad_id':
+                return 'tipo de propiedad';
+            case 'inquilino_id':
+                return 'inquilino';
+            case 'propiedad_id':
+                return 'propiedad';
+        }
+    }
+
     return(
         <div className="ObjectCreacion">
-            <label htmlFor={`${param}`}>Ingresar {param}: </label>
+            <label htmlFor={`${param}`}>Ingresar {renderSwitch(param)}: </label>
             <select name={`${param}`} id={`${param}`}>
                 <option value="">
-                    Seleccionar {param=='localidad_id'?'localidad':param=='tipo_propiedad_id'?'tipo de propiedad':''}
+                    Seleccionar {renderSwitch(param)}
                 </option>
                 {data && data.map((dato)=>(
                     <>
