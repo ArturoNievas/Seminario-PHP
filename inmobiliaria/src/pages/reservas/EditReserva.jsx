@@ -67,7 +67,6 @@ function EditPropiedad() {
         try {
             validarCampos(datos,validaciones);
 
-            //tira error al hacer el .json() en la conexion pero se actualiza
             conexionServer(`reservas/${id}`, "PUT", datos).then((response) => {
                 alert('Reserva actualizada correctamente.');
                 console.log(response);
@@ -82,8 +81,6 @@ function EditPropiedad() {
                 }
 
                 setErrorMessage(errorObject);
-                //const parsedError = JSON.parse(error.message);
-                //setErrorMessage(parsedError); 
             });
         }catch (err) {
             setState("ERROR");

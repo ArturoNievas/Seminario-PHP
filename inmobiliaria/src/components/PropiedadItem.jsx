@@ -31,7 +31,7 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleCl
   return (
     <li className="list-item" key={propiedad.id}>
       <p className='title-li'>Dirección: {propiedad.domicilio}</p>
-      {propiedad.imagen!=null && ( <img src={propiedad.imagen} type={`image/${propiedad.tipo_imagen}`} alt="imagen de la casa"/> )}
+      {propiedad.imagen!=null && ( <img src={`data:image/${propiedad.tipo_imagen};base64,${propiedad.imagen}`} alt="imagen de la casa"/> )}
       <p className='title-li'>{localidad===""?"Cargando...":localidad.nombre}</p>
       <p className='title-li'>{tipoPropiedad===""?"Cargando...":tipoPropiedad.nombre}</p>
       <p className='title-li'>Inicio disponibilidad: {propiedad.fecha_inicio_disponibilidad}</p>

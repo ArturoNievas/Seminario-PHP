@@ -1,6 +1,6 @@
 import '../assets/styles/InputCreacion.css';
 
-function input({ param, data }){
+function InputCreacionElemento({ param, data }){
     return (
         <div className='ObjectCreacion'>
             <div className='LabelCreacion'>
@@ -20,8 +20,7 @@ function input({ param, data }){
                         type="file" 
                         name={`${param}`} 
                         id={`${param}`} 
-                        defaultValue={data ? data[param] : ''}
-                        placeholder={`ingresar ${param}`}
+                        accept="image/*"
                     />
                 ) : (
                     <input 
@@ -37,4 +36,4 @@ function input({ param, data }){
     );
 }
 
-export default input;
+export default InputCreacionElemento;

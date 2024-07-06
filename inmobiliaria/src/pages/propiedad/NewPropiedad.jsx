@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import validarCampos from "../../utils/validarCampos";
 import conexionServer from "../../utils/conexionServer";
 import FormChangeDatos from "../../components/FormChangeDatos";
 
-//hay variables que sobran me parece
 function NewPropiedad(){
     const navigate = useNavigate();
-    const [data,setData]=useState({});
     const [state,setState]=useState();
     const [errorMessage, setErrorMessage] = useState("");
-
 
     async function sendData(event){
         event.preventDefault();
@@ -20,30 +17,44 @@ function NewPropiedad(){
         let formData = new FormData(event.target);
 
         let datos = {};
-        formData.forEach((value, key) => {
-            if(value==='true'){
-                datos[key]=1;
-            }else if(value==='false'){
-                datos[key]=0;
-            }else if(value!==''){
-                if(key == 'localidades_id'){
-                    datos["localidad_id"]=value;
-                }else if(key == 'tipos_propiedad_id'){
-                    datos["tipo_propiedad_id"]=value;
-                }else{
+        for (let key of formData.keys()) {
+            let value = formData.get(key);
+
+            if (key === 'disponible' && (value === 'true' || value === '1')) {
+                datos[key] = 1;
+            } else if (key === 'disponible' && (value === 'false' || value === '0')) {
+                datos[key] = 0;
+            } else if (value !== '') {
+                if (key === 'localidades_id') {
+                    datos["localidad_id"] = value;
+                } else if (key === 'tipos_propiedad_id') {
+                    datos["tipo_propiedad_id"] = value;
+                } else if (key === 'imagen' && value.size > 0) {
+                    try {
+                        let base64 = await new Promise((resolve, reject) => {
+                            let reader = new FileReader();
+                            reader.onloadend = () => {
+                                resolve(reader.result);
+                            };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(value);
+                        });
+                        let parts = base64.match(/^data:image\/([a-z0-9]+);base64,(.+)$/);
+                        datos['imagen'] = parts[2];
+                        datos['tipo_imagen'] = parts[1];
+                    } catch (error) {
+                        console.error("Error reading file:", error);
+                    }
+                } else {
                     datos[key] = value;
                 }
             }
-        });
+        }
 
         let validaciones = { 
             'domicilio': {
                 'requerido': true,
                 'longitud': 25
-            },
-            'tipo_imagen': {
-                'url': true,
-                'longitud': 50
             },
             'localidad_id' : {
                 'requerido':true,
@@ -114,6 +125,16 @@ function NewPropiedad(){
             setErrorMessage(errorObject);
         }
     }
+
+    // Función para leer un archivo como URL de datos (base64)
+    const readFileAsDataURL = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
 
     return(
         <>
