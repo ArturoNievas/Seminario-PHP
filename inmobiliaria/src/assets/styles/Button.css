@@ -26,6 +26,12 @@ button p{
     border: 1px solid var(--color-edit);
 }
 
+.button-detail {
+    background-color: var(--list-item-color); 
+    color: #6d42e8;
+    border: 1px solid #8a5eff;
+}
+
 .button-delete{
     background-color: var(--list-item-color);
     /*color: rgba(230, 35, 35, 0.575);*/
@@ -45,5 +51,10 @@ button p{
 
 .button-delete:hover{
     background-color: var(--color-delete);
+    color: white;
+}
+
+.button-detail:hover {
+    background-color: #6d42e8;
     color: white;
 }

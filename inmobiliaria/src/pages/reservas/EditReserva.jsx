@@ -35,7 +35,13 @@ function EditPropiedad() {
             }else if(value==='false'){
                 datos[key]=0;
             }else if(value!==''){
-                datos[key] = value;
+                if(key == 'inquilinos_id'){
+                    datos["inquilino_id"]=value;
+                }else if(key == 'propiedades_id'){
+                    datos["propiedad_id"]=value;
+                }else{
+                    datos[key] = value;
+                }
             }
         });
 
@@ -61,19 +67,24 @@ function EditPropiedad() {
         try {
             validarCampos(datos,validaciones);
 
-            //tira error al hacer el .json() en la conexion pero se actualiza
-            conexionServer(`reservas/${id}`, "PUT", datos).then(() => {
+            conexionServer(`reservas/${id}`, "PUT", datos).then((response) => {
                 alert('Reserva actualizada correctamente.');
-                navigate("/reservas");
-            }).catch(error => {
-                console.log("todo mal");
-                console.log(error.message);
+                console.log(response);
+                navigate("/reserva");
+            }).catch(err => {
                 setState("ERROR");
-                //const parsedError = JSON.parse(error.message);
-                //setErrorMessage(parsedError); 
+                let errorObject;
+                try {
+                    errorObject = JSON.parse(err.message);
+                } catch (parseError) {
+                    errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
+                }
+
+                setErrorMessage(errorObject);
             });
         }catch (err) {
             setState("ERROR");
+            console.log(err);
             let errorObject;
             try {
                 errorObject = JSON.parse(err.message);
@@ -90,10 +101,11 @@ function EditPropiedad() {
             <FormChangeDatos 
                 titulo="Editar reserva" 
                 handleSubmit={handleSubmit} 
-                params={["propiedad_id","inquilino_id","fecha_desde","cantidad_noches"]}
+                params={["fecha_desde","cantidad_noches"]}
                 state={state}
                 errorMessage={errorMessage}
                 data={data}
+                camposDeSeleccion={["inquilino_id","propiedad_id"]}
             />
         </>
     );

@@ -38,11 +38,16 @@ function EditTipoPropiedad() {
             conexionServer(`tipos_propiedad/${id}`, 'PUT', {nombre: datos.nombre}).then( () => {
                     alert('Tipo de propiedad actualizado exitosamente.');
                     navigate("/");
-                }).catch(error => {
-                    console.log(error.message);
+                }).catch(err => {
                     setState("ERROR");
-                    const parsedError = JSON.parse(error.message);
-                    setErrorMessage(parsedError); 
+                    let errorObject;
+                    try {
+                        errorObject = JSON.parse(err.message);
+                    } catch (parseError) {
+                        errorObject = { message: "Error inesperado. Por favor, inténtelo de nuevo más tarde." };
+                    }
+
+                    setErrorMessage(errorObject); 
                 });
         } catch (err) {
             setState("ERROR");

@@ -18,23 +18,30 @@ function PropiedadPage() {
   const [tiposPropiedad,setTiposPropiedad]=useState(null);
   const [state,setState]=useState("LOADING");
   const navigate=useNavigate();
-  const [refresh, setRefresh] = useState(false);
+  const [idsFiltrado,setIdsFiltrado]=useState([]);
 
   useEffect(()=>{
     setState("LOADING");
     conexionServer("propiedades").then( response => {
-      setData(response.data);
+      let datos=response.data;
+      let ids=[];
+
+      datos.forEach(element => {
+          ids.push(element.id);
+      });
+
+      console.log("ids: ",ids);
+      setIdsFiltrado(ids);
+      setData(datos);
       setState("SUCCESS");
     });
     conexionServer("localidades").then( response => {
       setLocalidades(response.data);
-      setState("SUCCESS");
     });
     conexionServer("tipos_propiedad").then( response => {
       setTiposPropiedad(response.data);
-      setState("SUCCESS");
     });
-  },[refresh]);
+  },[]);
 
 
   function handleClickCreate(event, url) {
@@ -43,6 +50,11 @@ function PropiedadPage() {
   };
 
   function handleClickEdit(event, url) {
+    event.preventDefault();
+    navigate(url);
+  };
+
+  function handleClickDetail(event, url) {
     event.preventDefault();
     navigate(url);
   };
@@ -68,7 +80,9 @@ function PropiedadPage() {
       propiedad={propiedad}
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
-      handleClickAdd={handleClickCreate}
+      handleClickDetail={handleClickDetail}
+      localidades={localidades}
+      tiposPropiedad={tiposPropiedad}
     />
   );
 
@@ -78,11 +92,11 @@ function PropiedadPage() {
       <main>
         {state==="SUCCESS" ? (
           <div className="div-main">
-            <FiltradoComponent data={data} setData={setData} setState={setState}/>
-            <UlComponent data={data} state={state} childrenItem={childrenItem} />
+            <FiltradoComponent data={data} setState={setState} setIds={setIdsFiltrado}/>
             <ButtonComponent type="add" handleClick={handleClickCreate} params={`/propiedad/create`} textContent='Agregar nueva Propiedad'/>
+            <UlComponent data={data} state={state} childrenItem={childrenItem} filtro={idsFiltrado}/>
           </div>
-        ) : state==="LOADING" ? (
+        ) : state==="LOADING" || state==="Loading" ? (
           <div className="loading-oval-container">
               <Oval
                   className="loading-oval"

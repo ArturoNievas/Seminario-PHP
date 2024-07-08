@@ -12,6 +12,7 @@ import NewPropiedad from './pages/propiedad/NewPropiedad';
 import ReservaPage from './pages/reservas/ReservaPage';
 import NewReserva from './pages/reservas/NewReserva';
 import EditReserva from './pages/reservas/EditReserva';
+import DetailPropiedad from './pages/propiedad/DetailPropiedad';
 
 const router = createBrowserRouter([
   {
@@ -39,11 +40,15 @@ const router = createBrowserRouter([
     element: <EditPropiedad />,
   },
   {
+    path: "/propiedad/detail/:id",
+    element: <DetailPropiedad />,
+  },
+  {
     path: "/reserva",
     element: <ReservaPage />,
   },
   {
-    path: "/reserva/create/:id",
+    path: "/reserva/create",
     element: <NewReserva />,
   },
   {
@@ -54,9 +59,7 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <RouterProvider router={router} />
 );
 
 // If you want to start measuring performance in your app, pass a function

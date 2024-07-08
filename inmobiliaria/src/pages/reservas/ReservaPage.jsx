@@ -14,17 +14,27 @@ function ReservaPage() {
   const [state, setState] = useState("LOADING");
   const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
+  const [propiedades,setPropiedades] = useState(null);
+  const [inquilinos,setInquilinos] = useState(null);
 
   useEffect(() => {
     setState("LOADING");
-    conexionServer('reservas')
-      .then(data => {
-        console.log("Data", data);
+    conexionServer('reservas').then(data => {
         setData(data.data);
         setState("SUCCESS");
       })
-      .catch(() => setState("ERROR"));
-  }, [refresh]);
+    conexionServer("propiedades").then( response => {
+      setPropiedades(response.data);
+    });
+    conexionServer("inquilinos").then( response => {
+      setInquilinos(response.data);
+    });
+  }, []);
+
+  function handleClickCreate(event, url) {
+    event.preventDefault();
+    navigate(url);
+  };
 
   function handleClickEdit(event, url) {
     event.preventDefault();
@@ -52,6 +62,8 @@ function ReservaPage() {
       reserva={reserva}
       handleClickEdit={handleClickEdit}
       handleClickDelete={handleClickDelete}
+      propiedades={propiedades}
+      inquilinos={inquilinos}
     />
   );
 
@@ -61,6 +73,7 @@ function ReservaPage() {
       <main>
         {state === "SUCCESS" ? (
           <div className="div-main">
+            <ButtonComponent type="add" handleClick={handleClickCreate} params={`/reserva/create`} textContent='Agregar nueva Reserva'/>
             <UlComponent data={data} state={state} childrenItem={childrenItem} />
           </div>
         ) : state === "LOADING" ? (

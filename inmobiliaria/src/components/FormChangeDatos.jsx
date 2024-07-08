@@ -10,7 +10,7 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
     return (
         <>
             <HeaderComponent />
-            {state === "Loading" ? (
+            {state === "Loading" || state === "LOADING" ? (
                 <div className="loading-oval-container">
                     <Oval
                         className="loading-oval"
@@ -26,19 +26,31 @@ function FormChangeDatos({ titulo, handleSubmit, params, state, errorMessage, da
                         <h3>{titulo}</h3>
                         <form className="formCreacion" onSubmit={(event) => handleSubmit(event)}>
                             {params.map((param, index) => (
-                                <InputCreacionElemento key={index} param={param} data={data} />
+                                <>
+                                    <InputCreacionElemento key={index} param={param} data={data} />
+                                    {errorMessage && errorMessage[param] && (
+                                        <div style={{ color: 'red' }}>
+                                            <p>{`${errorMessage[param]}`}</p>
+                                        </div>
+                                    )}
+                                </>
                             ))}
                             {camposDeSeleccion && camposDeSeleccion.map((param, index) => (
-                                <OptionElements key={index} param={param} />
+                                <>
+                                    <OptionElements key={index} param={param} datos={data}/>
+                                    {errorMessage && errorMessage[param] && (
+                                        <div style={{ color: 'red' }}>
+                                            <p>{`${errorMessage[param]}`}</p>
+                                        </div>
+                                    )}
+                                </>
                             ))}
                             <ButtonComponent type="add"/>
                         </form>
                     </div>
-                    {state === "ERROR" && (
+                    {errorMessage && errorMessage['message'] && (
                         <div style={{ color: 'red' }}>
-                            {Object.entries(errorMessage).map(([key, error]) => (
-                                <p key={key}>{`${error}`}</p>
-                            ))}
+                            <p>{`${errorMessage['message']}`}</p>
                         </div>
                     )}
                 </main>

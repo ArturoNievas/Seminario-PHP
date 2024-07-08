@@ -114,7 +114,6 @@ function propiedadDisponible($connection,$propiedad_id,$inicioIntervalo,$duracio
                   AND '$fecha_fin' > p.fecha_inicio_disponibilidad";
 
     // Si se proporciona un ID de reserva, excluimos esa reserva de la verificación de disponibilidad
-    echo $reserva_id;
     if ($reserva_id !== null) {
         $query = $query . " AND r.id <> '$reserva_id'";
     }
@@ -507,7 +506,7 @@ $app->put('/tipos_propiedad/{id}', function (Request $request, Response $respons
         // Verificar si se actualizó alguna fila
         if ($stmt->rowCount() == 0) {
             $response->getBody()->write(json_encode(['message' => "No se cambió ningún dato del tipo de propiedad"]));
-            return $response->withStatus(200);
+            return $response->withStatus(400);
         }
 
         $connection = null; // Cerrar la conexión
@@ -1141,7 +1140,7 @@ $app->put('/propiedades/{id}', function (Request $request, Response $response, $
         // Verifico si se cambió algun dato
         if ($stmt->rowCount() == 0) {
             $response->getBody()->write(json_encode(['message' => 'No se cambio ningun dato de la propiedad']));
-            return $response->withStatus(200);
+            return $response->withStatus(400);
         }
 
         $connection = null;
@@ -1545,7 +1544,7 @@ $app->put('/reservas/{id}', function (Request $request, Response $response, $arg
         // Verifico si se cambió algun dato
         if ($stmt->rowCount() == 0) {
             $response->getBody()->write(json_encode(['message' => 'No se cambio ningun dato de la reserva']));
-            return $response->withStatus(200);
+            return $response->withStatus(400);
         }
 
         $connection = null;
