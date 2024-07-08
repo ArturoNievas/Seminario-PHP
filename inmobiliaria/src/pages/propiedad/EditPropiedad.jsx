@@ -18,9 +18,9 @@ function EditPropiedad() {
     useEffect(()=>{
         setState("LOADING");
         conexionServer(`propiedades/${id}`)
-        .then(data => {
-            console.log("Data", data);
-            setData(data.data);
+        .then(response => {
+            console.log("Data", response);
+            setData(response.data);
             setState("SUCCESS");
         })
         .catch(() => setState("ERROR"));

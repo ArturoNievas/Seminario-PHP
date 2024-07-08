@@ -15,8 +15,8 @@ function EditTipoPropiedad() {
     const navigate=useNavigate();
 
     useEffect(()=>{
-        conexionServer(`tipos_propiedad/${id}`).then( data => {
-            setData(data);
+        conexionServer(`tipos_propiedad/${id}`).then( response => {
+            setData(response.data);
             setState("SUCCESS");
         });
     },[]);

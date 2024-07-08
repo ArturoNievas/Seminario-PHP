@@ -14,6 +14,8 @@ import FiltradoComponent from '../../components/FiltradoComponent';
 //sin que carguen todos sus datos por completo)
 function PropiedadPage() {
   const [data,setData]=useState(null);
+  const [localidades,setLocalidades]=useState(null);
+  const [tiposPropiedad,setTiposPropiedad]=useState(null);
   const [state,setState]=useState("LOADING");
   const navigate=useNavigate();
   const [refresh, setRefresh] = useState(false);
@@ -23,7 +25,15 @@ function PropiedadPage() {
     conexionServer("propiedades").then( response => {
       setData(response.data);
       setState("SUCCESS");
-    });  
+    });
+    conexionServer("localidades").then( response => {
+      setLocalidades(response.data);
+      setState("SUCCESS");
+    });
+    conexionServer("tipos_propiedad").then( response => {
+      setTiposPropiedad(response.data);
+      setState("SUCCESS");
+    });
   },[refresh]);
 
 
