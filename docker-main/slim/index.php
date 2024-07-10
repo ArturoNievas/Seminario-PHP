@@ -1189,6 +1189,8 @@ $app->get("/propiedades",function(Request $request,Response $response,$args){
                     // Se hace la distincion de campos porque este requiere una comparación de <= y no de igualdad
                     $fecha_inicio_disponibilidad = $data[$key];
                     $sql = $sql . " AND $key <= '$fecha_inicio_disponibilidad'";
+                } else if ($key == 'cantidad_huespedes'){
+                    $sql = $sql . " AND $key >= $value";
                 } else {
                     $sql = $sql . " AND $key = $value";
                 }

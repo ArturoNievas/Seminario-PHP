@@ -32,11 +32,12 @@ const PropiedadItem = ({ propiedad, handleClickEdit, handleClickDelete, handleCl
     <li className="list-item" key={propiedad.id}>
       <p className='title-li'>Dirección: {propiedad.domicilio}</p>
       {propiedad.imagen!=null && ( <img src={`data:image/${propiedad.tipo_imagen};base64,${propiedad.imagen}`} alt="imagen de la casa"/> )}
-      <p className='title-li'>{localidad===""?"Cargando...":localidad.nombre}</p>
+      <p className='title-li'>Localidad: {localidad===""?"Cargando...":localidad.nombre}</p>
       <p className='title-li'>{tipoPropiedad===""?"Cargando...":tipoPropiedad.nombre}</p>
       <p className='title-li'>Inicio disponibilidad: {propiedad.fecha_inicio_disponibilidad}</p>
       <p className='title-li'>Huéspedes: {propiedad.cantidad_huespedes}</p>
       <p className='title-li'>Valor noche: {propiedad.valor_noche}</p>
+      <p className='title-li'>ID: {propiedad.id}</p>
       <div className='buttons'>
         <ButtonComponent type="edit" handleClick={(event) => handleClickEdit(event,`/propiedad/edit/${propiedad.id}`)} />
         <ButtonComponent type="delete" handleClick={(event) => handleClickDelete(event,propiedad.id)} />

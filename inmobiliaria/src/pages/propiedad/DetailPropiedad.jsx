@@ -54,6 +54,10 @@ function VerDetalle(){
                                                     <p>{`${key}:`}</p>
                                                     <p>{datos[key]==1?'Si':'No'}</p>
                                                 </>
+                                            ): key == 'imagen' && datos?.tipo_imagen ? (
+                                                <>
+                                                    <img src={`data:image/${datos['tipo_imagen']};base64,${datos['imagen']}`} alt="imagen de la casa"/>
+                                                </>
                                             ):(
                                                 <>
                                                     <p>{`${key}:`}</p>

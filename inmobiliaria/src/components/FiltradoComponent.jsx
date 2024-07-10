@@ -38,7 +38,7 @@ function FiltradoComponent({ data, setState, setIds }) {
 
             let newData={};
             for(let key in allData){
-                console.log(key);
+                console.log("filtro" + key);
                 if(allData[key] !== "" && allData[key] !== null && allData[key] !== undefined){
                     console.log(allData[key]);  
                     if(typeof allData[key]=== "boolean"){
@@ -55,6 +55,7 @@ function FiltradoComponent({ data, setState, setIds }) {
             let queryParams = new URLSearchParams(newData).toString();
             console.log(`propiedades?${queryParams}`);
             conexionServer(`propiedades?${queryParams}`).then( response => {
+                console.log(response);
                 let datos=response.data;
                 let ids=[];
 
